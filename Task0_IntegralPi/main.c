@@ -62,8 +62,8 @@ int main(int argc, char **argv)
         {
             pthread_join(threads[i], NULL);
         }
+	clock_t end = clock();
         printf("%f \n", result);
-        clock_t end = clock();
         double elapsed_time = (double)(end - begin) / CLOCKS_PER_SEC;
         printf("Elapsed time: %f s\n", elapsed_time);
         free(threads);
