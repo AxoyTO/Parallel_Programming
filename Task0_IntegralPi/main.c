@@ -6,6 +6,7 @@
 double result = 0.0;         // the result
 int num_partition_intervals; // the number of intervals from 0 to 1
 int num_threads;             // number of threads
+pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
 double f(double a)
 {
@@ -25,9 +26,11 @@ void *EstimatePi(void *arg)
         tmp += f(x);
     }
 
-    tmp *= width;
-    result += tmp;
-    //result = width * tmp;
+    //tmp *= width;
+
+    pthread_mutex_lock(&mut);
+    result = result + width * tmp;
+    pthread_mutex_unlock(&mut);
     return NULL;
 }
 
@@ -62,7 +65,7 @@ int main(int argc, char **argv)
         {
             pthread_join(threads[i], NULL);
         }
-	clock_t end = clock();
+        clock_t end = clock();
         printf("%f \n", result);
         double elapsed_time = (double)(end - begin) / CLOCKS_PER_SEC;
         printf("Elapsed time: %f s\n", elapsed_time);
