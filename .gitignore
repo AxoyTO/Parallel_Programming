@@ -37,7 +37,7 @@ bld/
 #wwwroot/
 
 #Root folder
-/hpc_sem_vmk_323_2021/*
+hpc_sem_vmk_323_2021/*
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/
