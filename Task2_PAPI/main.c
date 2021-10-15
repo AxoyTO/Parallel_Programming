@@ -163,27 +163,10 @@ void mode5_64(int32_t N, int64_t **A, int64_t **B, int64_t **C){
     }
 }
 
-/*
-void display_matrix_32(int32_t **M, int32_t N){
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < N; j++){
-            printf("%d ", M[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
+void handle_error(int retval, int l, char *s){
+    printf("PAPI error %d: %s at line: %d, %s\n", retval, PAPI_strerror(retval), l, s);
 }
 
-void display_matrix_64(int64_t **M, int32_t N){
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < N; j++){
-            printf("%ld ", M[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-*/
 int main(int argc, char **argv){
     if(argc == 5){
         char T;
@@ -199,28 +182,43 @@ int main(int argc, char **argv){
         int32_t **C_32 = NULL;
         int64_t **C_64 = NULL;
 
-        //int ret_val;
-        //L1 Load, L1 Store, L1 Cache
-        //L2 Load, L2 Store, L2 Cache
-        long long counters[8];
+        int ret_val;
+        long long counters[4];
         int event_set = PAPI_NULL;
-        int PAPI_events[] = {PAPI_L1_LDM, PAPI_L1_STM, PAPI_L1_TCM, PAPI_L1_TCA, PAPI_L2_LDM, PAPI_L2_STM, PAPI_L2_TCM, PAPI_L2_TCA};
 
-        if(PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT){
+        ret_val = PAPI_library_init(PAPI_VER_CURRENT);
+        if(ret_val != PAPI_VER_CURRENT){
             fprintf(stderr, "Failed to initialize PAPI\n");
             return 1;
         }
 
-        if(PAPI_create_eventset(&event_set) != PAPI_OK){
-            fprintf(stderr, "PAPI can't create event set...\n");
+        ret_val = PAPI_create_eventset(&event_set);
+        if(ret_val != PAPI_OK){
+            handle_error(ret_val, __LINE__, __FILE__);
             return 2;
         }
 
-        //printf("PAPI_add_events returns %d\n", PAPI_add_events(event_set, PAPI_events, 6));
+        ret_val = PAPI_add_event(event_set, PAPI_L1_LDM);   //LOAD
+        if(ret_val != PAPI_OK){
+            handle_error(ret_val, __LINE__, __FILE__);
+            return 3;
+        }
+        ret_val = PAPI_add_event(event_set, PAPI_L1_STM);   //STORE
+        if(ret_val != PAPI_OK){
+            handle_error(ret_val, __LINE__, __FILE__);
+            return 3;
+        }
 
-        if(PAPI_add_events(event_set, PAPI_events, 6) != PAPI_OK){
-            fprintf(stderr, "PAPI can't add events...\n");
-            //return 3;
+        ret_val = PAPI_add_event(event_set, PAPI_L1_DCM);   //DATA CACHE MISS
+        if(ret_val != PAPI_OK){
+            handle_error(ret_val, __LINE__, __FILE__);
+            return 3;
+        }
+
+        ret_val = PAPI_add_event(event_set, PAPI_L1_DCA);   //DATA CACHE ACCESS
+        if(ret_val != PAPI_OK){
+            handle_error(ret_val, __LINE__, __FILE__);
+            return 3;
         }
 
         bin_a = fopen("a", "rb");
@@ -291,86 +289,95 @@ int main(int argc, char **argv){
         fclose(bin_c);
 
         if(T == 'd'){
-            //display_matrix_32(A_32, N);
-            //display_matrix_32(B_32, N);
-            //display_matrix_32(C_32, N);
             switch(mode){
                 case 0:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 4;
                     }
                     begin = clock();
                     mode0_32(N, A_32, B_32, C_32);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 5;
                     }
                     break;
                 case 1:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 6;
                     }
                     begin = clock();
                     mode1_32(N, A_32, B_32, C_32);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 7;
                     }
                     break;
                 case 2:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 8;
                     }
                     begin = clock();
                     mode2_32(N, A_32, B_32, C_32);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 9;
                     }
                     break;
                 case 3:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 10;
                     }
                     begin = clock();
                     mode3_32(N, A_32, B_32, C_32);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 11;
                     }
                     break;
                 case 4:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 12;
                     }
                     begin = clock();
                     mode4_32(N, A_32, B_32, C_32);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 13;
                     }
                     break;
                 case 5:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 14;
                     }
                     begin = clock();
                     mode5_32(N, A_32, B_32, C_32);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 15;
                     }
                     break;
                 default:
@@ -379,98 +386,103 @@ int main(int argc, char **argv){
             }
             if(mode >= 0 && mode <= 5){
                 elapsed_time = (double) (end - begin) / CLOCKS_PER_SEC;
-                printf("Mode: %d --- Elapsed time: %lf s.\n", mode, elapsed_time);
-                printf("L1 Cache --- Load: %lld (%.3lf%%) | Store: %lld (%.3lf%%) | TotalMiss: %lld (%.3lf%%)\n",
+                //LOAD, STORE, DATA CACHE MISS, DATA CACHE ACCESS
+                printf("Mode: %d --- Elapsed time: %.3lf s. --- ", mode, elapsed_time);
+                printf("L1 Load(LDM): %lld (%.4lf%%) | L1 Store(STM): %lld (%.4lf%%) | L1 Data Cache Miss(DCM): %lld (%.4lf%%)\n",
                        counters[0], (double) counters[0] / (double) counters[3],
                        counters[1], (double) counters[1] / (double) counters[3],
                        counters[2], (double) counters[2] / (double) counters[3]);
-                printf("L2 Cache --- Load: %lld (%.3lf%%) | Store: %lld (%.3lf%%) | TotalMiss: %lld (%.3lf%%)\n",
-                       counters[3], (double) counters[3] / (double) counters[6],
-                       counters[4], (double) counters[4] / (double) counters[6],
-                       counters[5], (double) counters[5] / (double) counters[6]);
             }
-            //display_matrix_32(C_32, N);
         } else if(T == 'l'){
-            //display_matrix_64(A_64, N);
-            //display_matrix_64(B_64, N);
-            //display_matrix_64(C_64, N);
             switch(mode){
                 case 0:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 16;
                     }
                     begin = clock();
                     mode0_64(N, A_64, B_64, C_64);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 17;
                     }
                     break;
                 case 1:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 18;
                     }
                     begin = clock();
                     mode1_64(N, A_64, B_64, C_64);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 19;
                     }
                     break;
                 case 2:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 20;
                     }
                     begin = clock();
                     mode2_64(N, A_64, B_64, C_64);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 21;
                     }
                     break;
                 case 3:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 22;
                     }
                     begin = clock();
                     mode3_64(N, A_64, B_64, C_64);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 23;
                     }
                     break;
                 case 4:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 24;
                     }
                     begin = clock();
                     mode4_64(N, A_64, B_64, C_64);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 25;
                     }
                     break;
                 case 5:
-                    if(PAPI_start_counters(PAPI_events, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't start counters...\n");
-                        //return 3;
+                    ret_val = PAPI_start(event_set);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 26;
                     }
                     begin = clock();
                     mode5_64(N, A_64, B_64, C_64);
                     end = clock();
-                    if(PAPI_stop_counters(counters, 8) != PAPI_OK){
-                        fprintf(stderr, "PAPI can't stop counters...\n");
-                        //return 4;
+                    ret_val = PAPI_stop(event_set, counters);
+                    if(ret_val != PAPI_OK){
+                        handle_error(ret_val, __LINE__, __FILE__);
+                        return 27;
                     }
                     break;
                 default:
@@ -479,15 +491,11 @@ int main(int argc, char **argv){
             }
             if(mode >= 0 && mode <= 5){
                 elapsed_time = (double) (end - begin) / CLOCKS_PER_SEC;
-                printf("Mode: %d --- Elapsed time: %lf s.\n", mode, elapsed_time);
-                printf("L1 Cache --- Load: %lld (%.3lf%%) | Store: %lld (%.3lf%%) | TotalMiss: %lld (%.3lf%%)\n",
+                printf("Mode: %d --- Elapsed time: %.3lf s. --- ", mode, elapsed_time);
+                printf("L1 Load(LDM): %lld (%.4lf%%) | L1 Store(STM): %lld (%.4lf%%) | L1 Data Cache Miss(DCM): %lld (%.4lf%%)\n",
                        counters[0], (double) counters[0] / (double) counters[3],
                        counters[1], (double) counters[1] / (double) counters[3],
                        counters[2], (double) counters[2] / (double) counters[3]);
-                printf("L2 Cache --- Load: %lld (%.3lf%%) | Store: %lld (%.3lf%%) | TotalMiss: %lld (%.3lf%%)\n",
-                       counters[4], (double) counters[4] / (double) counters[7],
-                       counters[5], (double) counters[5] / (double) counters[7],
-                       counters[6], (double) counters[6] / (double) counters[7]);
             }
             //display_matrix_64(C_64, N);
         }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-./bin 100 d
-echo "32-Bit Test1: N=100 T='d'"
+./bin 512 d
+echo "32-Bit Test 1: N=512 T='d'"
 ./main a b c 0
 ./main a b c 1
 ./main a b c 2
@@ -9,8 +9,8 @@ echo "32-Bit Test1: N=100 T='d'"
 ./main a b c 4
 ./main a b c 5
 
-./bin 500 d
-echo "32-Bit Test 2: N=500 T='d'"
+./bin 1024 d
+echo "32-Bit Test 3: N=1024 T='d'"
 ./main a b c 0
 ./main a b c 1
 ./main a b c 2
@@ -18,8 +18,8 @@ echo "32-Bit Test 2: N=500 T='d'"
 ./main a b c 4
 ./main a b c 5
 
-./bin 3000 d
-echo "32-Bit Test 3: N=3000 T='d'"
+./bin 2048 d
+echo "32-Bit Test 3: N=2048 T='d'"
 ./main a b c 0
 ./main a b c 1
 ./main a b c 2

@@ -22,17 +22,17 @@ test:
 	$(CC) binary.c -o bin -fsanitize=address -std=c99
 	$(CC) main.c $(BIN) $(CFLAGS) -fsanitize=address
 	sh test.sh
-	rm main
+	rm main bin a b c
 
 test32: bin all
 	sh test32.sh
-	rm main
+	rm main bin a b c
 
 test64: bin all
 	sh test64.sh
-	rm main
+	rm main bin a b c
 
 clean:
-	rm main a b c
+	rm main bin a b c
 
 
