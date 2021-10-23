@@ -356,3 +356,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Unnecessary
+*.pdf
+*.txt
+*.idea
