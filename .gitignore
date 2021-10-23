@@ -361,3 +361,4 @@ MigrationBackup/
 *.pdf
 *.txt
 *.idea
+*.clang-format
