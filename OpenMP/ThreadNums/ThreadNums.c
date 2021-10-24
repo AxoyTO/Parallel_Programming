@@ -1,7 +1,16 @@
-#include <stdio.h>
 #include <omp.h>
+#include <stdio.h>
 
-int main(){
+int main() {
+    printf("Max threads available: %d\n", omp_get_max_threads());
+    /*
+     *There are some environment variables you should set to maximise performance.
+     * don’t rely on the defaults for these!
+            OMP_WAIT_POLICY=active   // Encourages idle threads to spin rather than sleep
+            OMP_DYNAMIC=false       // Don’t let the runtime deliver fewer threads than you asked for
+            OMP_PROC_BIND=true      // Prevents threads migrating between cores
+     */
+
 
 /*
 //Use $(bash) export OMP_NUM_THREADS=X
@@ -26,4 +35,3 @@ int main(){
 
     return 0;
 }
-
