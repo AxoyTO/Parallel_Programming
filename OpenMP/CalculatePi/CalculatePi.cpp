@@ -3,6 +3,7 @@
 #include <omp.h>
 
 #define N 1000000000
+// Partitioning, the bigger N is, the more precise the result!
 
 int main() {
     double h = 1.0 / N;
@@ -19,6 +20,6 @@ int main() {
     }
 
     pi = h * sum;
-    std::cout << std::setprecision(10);
+    std::cout << std::setprecision(30);
     std::cout << "Calculated Pi: " << pi << "\n";
 }
