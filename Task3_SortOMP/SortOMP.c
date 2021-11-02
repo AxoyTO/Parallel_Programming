@@ -50,7 +50,7 @@ void sortSerial(int A[], int left, int right){
 }
 
 void sort(int A[], int left, int right){
-    if(left < right){
+        if(left < right){
         if((right - left) > 1000){
             int middle = (left + right) / 2;
 #pragma omp task firstprivate (A, left, middle)
@@ -74,7 +74,8 @@ int main(int argc, char **argv){
         int *A = malloc(n * sizeof(int));
         int *B = malloc(n * sizeof(int));
         if(!A || !B){
-            fputs("Failed to allocate memory!\n", stderr);
+            //fputs("Failed to allocate memory!\n", stderr);
+            fputs("Failed to allocate memory!\n", stdout);
             return EXIT_FAILURE;
         }
 
@@ -108,23 +109,28 @@ int main(int argc, char **argv){
         double omp_time = end - begin;
         printf("OMP MergeSort Elapsed Time: %f s.\n", omp_time);
         if(omp_time > qsort_time){
-            fputs("TEST FAILED... Qsort > OMP MergeSort\n", stderr);
+            //POLUS outputs stderr in .err file
+            //fputs("TEST FAILED... Qsort > OMP MergeSort\n", stderr);
+            fputs("TEST FAILED... Qsort > OMP MergeSort\n", stdout);
             goto FAIL;
         }
 
         if(memcmp(A, B, n) != 0){
-            fputs("TEST FAILED... Arrays are not same.\n", stderr);
+            //fputs("TEST FAILED... Arrays are not same.\n", stdout);
+            fputs("TEST FAILED... Arrays are not same.\n", stdout);
             goto FAIL;
         }
 
-        fputs("TEST PASSED!...\n", stderr);
+        fputs("TEST PASSED!...\n", stdout);
 
         FAIL:
         free(A);
         free(B);
     } else{
-        fputs("Command line format:\n", stderr);
-        fputs("./<binary> <array_size> <number_of_open_mp_threads>\n", stderr);
+        //fputs("Command line format:\n", stderr);
+        fputs("Command line format:\n", stdout);
+        //fputs("./<binary> <array_size> <number_of_open_mp_threads>\n", stderr);
+        fputs("./<binary> <array_size> <number_of_open_mp_threads>\n", stdout);
         fputs("For example: ./SortOMP 100500 4\n", stdout);
     }
 
