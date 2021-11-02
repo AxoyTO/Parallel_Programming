@@ -1,0 +1,39 @@
+#!/bin/bash
+
+
+echo "\n *  ARRAY SIZE: 1000000\n *  THREADS: 12"
+./SortOMP 1000000 12 
+
+echo "\n *  ARRAY SIZE: 1000000\n *  THREADS: 24"
+./SortOMP 1000000 24
+
+echo "\n *  ARRAY SIZE: 1000000\n *  THREADS: 48"
+./SortOMP 1000000 48
+
+echo "\n *  ARRAY SIZE: 1000000\n *  THREADS: 72"
+./SortOMP 1000000 72
+
+echo "\n *  ARRAY SIZE: 1000000\n *  THREADS: 96"
+./SortOMP 1000000 96
+
+echo "\n *  ARRAY SIZE: 1000000\n *  THREADS: 128"
+./SortOMP 1000000 128
+
+echo "\n *  ARRAY SIZE: 2000000\n *  THREADS: 12"
+./SortOMP 2000000 12
+
+echo "\n *  ARRAY SIZE: 1000000\n *  THREADS: 24"
+./SortOMP 2000000 24
+
+echo "\n *  ARRAY SIZE: 2000000\n *  THREADS: 48"
+./SortOMP 2000000 48
+
+echo "\n *  ARRAY SIZE: 2000000\n *  THREADS: 72"
+./SortOMP 2000000 72
+
+echo "\n *  ARRAY SIZE: 2000000\n *  THREADS: 96"
+./SortOMP 2000000 96
+
+echo "\n *  ARRAY SIZE: 2000000\n *  THREADS: 128"
+./SortOMP 2000000 128
+
