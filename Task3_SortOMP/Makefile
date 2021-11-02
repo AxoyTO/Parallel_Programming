@@ -4,7 +4,7 @@ BIN = -o SortOMP
 DATE = $(shell date +%d/%m/%y)
 
 
-.PHONY: all run test clean
+.PHONY: all run test clean submitpolus cleanpolus
 
 all: SortOMP.c
 	@echo " *  Compiling with flags $(CFLAGS)"
@@ -20,6 +20,7 @@ run: all
 
 
 test:
+	#fsanitize=address doesn't exist in POLUS
 	@echo " *  Compiling with flags $(CFLAGS) -fsanitize=address"
 	@$(CC) SortOMP.c $(BIN) $(CFLAGS) -fsanitize=address
 	@echo " *  Test successful!"
@@ -28,3 +29,9 @@ test:
 
 clean:
 	rm SortOMP
+
+submitpolus:
+	mpisubmit.pl --stdout result.out --stderr result.err make run
+
+cleanpolus:
+	rm result.err result.out
