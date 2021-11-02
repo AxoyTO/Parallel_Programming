@@ -35,3 +35,4 @@ submitpolus:
 
 cleanpolus:
 	rm result.err result.out
+

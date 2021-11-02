@@ -62,3 +62,4 @@ echo "\n *  ARRAY SIZE: 2000000\n *  THREADS: 96"
 echo "\n *  ARRAY SIZE: 2000000\n *  THREADS: 128"
 ./SortOMP 2000000 128
 '
+
