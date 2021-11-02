@@ -4,7 +4,7 @@
 int main() {
     printf("Max threads available: %d\n", omp_get_max_threads());
     /*
-     *There are some environment variables you should set to maximise performance.
+     *There are some environment variables to set to maximise performance!
      * don’t rely on the defaults for these!
             OMP_WAIT_POLICY=active   // Encourages idle threads to spin rather than sleep
             OMP_DYNAMIC=false       // Don’t let the runtime deliver fewer threads than you asked for
