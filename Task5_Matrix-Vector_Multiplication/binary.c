@@ -18,67 +18,67 @@ int main(int argc, char **argv){
             case 'm':
             case 'M':
                 printf("[INFO] Generating Matrix of %dx%d elements...\n", N, N);
-                int64_t *M = NULL;
-                M = (int64_t *) malloc(N * N * sizeof(int64_t));
-                if(M == NULL){
-                    fprintf(stderr, "[ERROR] Failed to allocate memory for matrix M");
+                int64_t *A = NULL;
+                A = (int64_t *) malloc(N * N * sizeof(int64_t));
+                if(A == NULL){
+                    fprintf(stderr, "[ERROR] Failed to allocate memory for matrix A");
                     return MALLOC_ERROR;
                 }
 
                 for(int i = 0; i < N * N; i++){
-                    M[i] = rand() % 10;
+                    A[i] = rand() % 10;
                 }
 
-                printf("[INFO] Writing generated matrix to file 'matrix'\n");
-                FILE *bin_m = fopen("matrix", "wb");
+                printf("[INFO] Writing generated matrix to file 'a'\n");
+                FILE *bin_m = fopen("a", "wb");
                 fwrite(&N, sizeof(int), 1, bin_m);
-                fwrite(M, sizeof(int64_t), N * N, bin_m);
+                fwrite(A, sizeof(int64_t), N * N, bin_m);
 
                 fclose(bin_m);
-                printf("[INFO] File 'matrix' is ready!\n");
+                printf("[INFO] File 'a' is ready!\n");
 
-                free(M);
+                free(A);
                 break;
             case 'v':
             case 'V':
                 printf("[INFO] Generating Vector of %d elements...\n", N);
-                int64_t *V = (int64_t *) malloc(N * sizeof(int64_t));
-                if(V == NULL){
-                    fprintf(stderr, "[ERROR] Failed to allocate memory for vector V\n");
+                int64_t *b = (int64_t *) malloc(N * sizeof(int64_t));
+                if(b == NULL){
+                    fprintf(stderr, "[ERROR] Failed to allocate memory for vector b\n");
                     return MALLOC_ERROR;
                 }
 
                 printf("[INFO] Generating result(empty) vector\n");
-                int64_t *result_V = (int64_t *) malloc(N * sizeof(int64_t));
-                if(result_V == NULL){
-                    fprintf(stderr, "[ERROR] Failed to allocate memory for vector V\n");
+                int64_t *c = (int64_t *) malloc(N * sizeof(int64_t));
+                if(c == NULL){
+                    fprintf(stderr, "[ERROR] Failed to allocate memory for vector b\n");
                     return MALLOC_ERROR;
                 }
 
                 for(int i = 0; i < N; i++){
-                    V[i] = i;
-                    result_V[i] = 0;
+                    b[i] = i;
+                    c[i] = 0;
                 }
 
-                printf("[INFO] Writing generated vector to file 'vector'\n");
+                printf("[INFO] Writing generated vector to file 'b'\n");
                 FILE *bin_v;
-                bin_v = fopen("vector", "wb");
+                bin_v = fopen("b", "wb");
 
-                fwrite(V, sizeof(int64_t), N, bin_v);
+                fwrite(b, sizeof(int64_t), N, bin_v);
 
                 fclose(bin_v);
-                printf("[INFO] File 'vector' is ready!\n");
+                printf("[INFO] File 'b' is ready!\n");
 
-                printf("[INFO] Writing result(empty) vector to file 'result_vector'\n");
-                bin_v = fopen("result_vector", "wb");
-                fwrite(result_V, sizeof(int64_t), N, bin_v);
+                printf("[INFO] Writing result(empty) vector to file 'c'\n");
+                bin_v = fopen("c", "wb");
+                fwrite(c, sizeof(int64_t), N, bin_v);
                 fclose(bin_v);
 
-                printf("[INFO] File 'result_vector' is ready!\n");
+                printf("[INFO] File 'c' is ready!\n");
                 printf("\n");
 
-                free(V);
-                free(result_V);
+                free(b);
+                free(c);
                 break;
             default:
                 goto inputError;
