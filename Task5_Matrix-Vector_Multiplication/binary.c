@@ -10,57 +10,38 @@ int main(int argc, char **argv){
             goto inputError;
         }
         char type = *argv[1];
-        int64_t N = atoi(argv[2]);
+        int N = atoi(argv[2]);
         if(N <= 0){
             goto inputError;
         }
         switch(type){
             case 'm':
             case 'M':
-                printf("[INFO] Generating Matrix of %ldx%ld elements...\n", N, N);
-                int64_t **M = NULL;
-                M = (int64_t **) malloc(N * sizeof(int64_t *));
+                printf("[INFO] Generating Matrix of %dx%d elements...\n", N, N);
+                int64_t *M = NULL;
+                M = (int64_t *) malloc(N * N * sizeof(int64_t));
                 if(M == NULL){
                     fprintf(stderr, "[ERROR] Failed to allocate memory for matrix M");
                     return MALLOC_ERROR;
                 }
-                for(int i = 0; i < N; i++){
-                    *(M + i) = (int64_t *) malloc(N * sizeof(int64_t));
-                    if(*(M + i) == NULL){
-                        fprintf(stderr, "[ERROR] Failed to allocate memory for matrix M[%d]\n", i);
-                        return MALLOC_ERROR;
-                    }
-                }
 
-                for(int i = 0; i < N; i++){
-                    for(int j = 0; j < N; j++){
-                        M[i][j] = rand() % 10;
-                    }
+                for(int i = 0; i < N * N; i++){
+                    M[i] = rand() % 10;
                 }
 
                 printf("[INFO] Writing generated matrix to file 'matrix'\n");
                 FILE *bin_m = fopen("matrix", "wb");
-                fwrite(&N, sizeof(int64_t), 1, bin_m);
-                for(int i = 0; i < N; i++){
-                    fwrite(*(M + i), sizeof(int64_t), N, bin_m);
-                }
+                fwrite(&N, sizeof(int), 1, bin_m);
+                fwrite(M, sizeof(int64_t), N * N, bin_m);
+
                 fclose(bin_m);
                 printf("[INFO] File 'matrix' is ready!\n");
-                printf("---------------------------\n");
-                for(int i = 0; i < N; i++){
-                    for(int j = 0; j < N; j++)
-                        printf("%ld ", M[i][j]);
-                    printf("\n");
-                }
 
-                for(int i = 0; i < N; i++){
-                    free(M[i]);
-                }
                 free(M);
                 break;
             case 'v':
             case 'V':
-                printf("[INFO] Generating Vector of %ld elements...\n", N);
+                printf("[INFO] Generating Vector of %d elements...\n", N);
                 int64_t *V = (int64_t *) malloc(N * sizeof(int64_t));
                 if(V == NULL){
                     fprintf(stderr, "[ERROR] Failed to allocate memory for vector V\n");
@@ -82,29 +63,18 @@ int main(int argc, char **argv){
                 printf("[INFO] Writing generated vector to file 'vector'\n");
                 FILE *bin_v;
                 bin_v = fopen("vector", "wb");
-                fwrite(&N, sizeof(int64_t), 1, bin_v);
-                for(int i = 0; i < N; i++){
-                    fwrite(V + i, sizeof(int64_t), N, bin_v);
-                }
+
+                fwrite(V, sizeof(int64_t), N, bin_v);
+
                 fclose(bin_v);
                 printf("[INFO] File 'vector' is ready!\n");
 
                 printf("[INFO] Writing result(empty) vector to file 'result_vector'\n");
                 bin_v = fopen("result_vector", "wb");
-                fwrite(&N, sizeof(int64_t), 1, bin_v);
-                for(int i = 0; i < N; i++){
-                    fwrite(result_V + i, sizeof(int64_t), N, bin_v);
-                }
+                fwrite(result_V, sizeof(int64_t), N, bin_v);
                 fclose(bin_v);
 
                 printf("[INFO] File 'result_vector' is ready!\n");
-                printf("-------------------------------------------------------\n");
-
-                for(int i = 0; i < N; i++)
-                    printf("%ld ", V[i]);
-                printf("\n-------------------------------------------------------\n");
-                for(int i = 0; i < N; i++)
-                    printf("%ld ", result_V[i]);
                 printf("\n");
 
                 free(V);
