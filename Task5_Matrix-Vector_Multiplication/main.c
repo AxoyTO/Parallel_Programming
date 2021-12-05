@@ -163,6 +163,7 @@ int main(int argc, char **argv){
 
         FILE *f = fopen(argv[1], "rb");
         fread(&N, sizeof(int), 1, f);
+        fclose(f);
 
         if(rank == 0){
             if(N % comm_size != 0){
@@ -177,17 +178,20 @@ int main(int argc, char **argv){
         A = (int64_t *) malloc(local_N * N * sizeof(int64_t));
         if(A == NULL){
             fprintf(stderr, "[ERROR] Failed to allocate memory for A in function 'main'\n");
-            exit(MALLOC_ERROR);
+            return MALLOC_ERROR;
         }
         b = (int64_t *) malloc(local_N * sizeof(int64_t));
         if(b == NULL){
             fprintf(stderr, "[ERROR] Failed to allocate memory for b in function 'main'\n");
-            exit(MALLOC_ERROR);
+            free(A);
+            return MALLOC_ERROR;
         }
         c = (int64_t *) malloc(local_N * sizeof(int64_t));
         if(c == NULL){
             fprintf(stderr, "[ERROR] Failed to allocate memory for c in function 'main'\n");
-            exit(MALLOC_ERROR);
+            free(A);
+            free(b);
+            return MALLOC_ERROR;
         }
 
         Read_matrix_from_file(argv[1], A, N, local_N, rank, comm);
@@ -210,6 +214,8 @@ int main(int argc, char **argv){
             printf("\nProcesses: %d\n"
                    "Elapsed Time: %f s.\n", comm_size, end - start);
         }
+
+
         free(A);
         free(b);
         free(c);

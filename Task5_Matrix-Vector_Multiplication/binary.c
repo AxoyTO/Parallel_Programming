@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #define MALLOC_ERROR 1
 
@@ -25,7 +26,8 @@ int main(int argc, char **argv){
                     return MALLOC_ERROR;
                 }
 
-                for(int i = 0; i < N * N; i++){
+                int i = 0;
+                for(i = 0; i < N * N; i++){
                     A[i] = rand() % 10;
                 }
 
@@ -55,7 +57,7 @@ int main(int argc, char **argv){
                     return MALLOC_ERROR;
                 }
 
-                for(int i = 0; i < N; i++){
+                for(i = 0; i < N; i++){
                     b[i] = i;
                     c[i] = 0;
                 }
