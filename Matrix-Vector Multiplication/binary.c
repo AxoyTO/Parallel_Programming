@@ -44,14 +44,14 @@ int main(int argc, char **argv){
             case 'v':
             case 'V':
                 printf("[INFO] Generating Vector of %d elements...\n", N);
-                int64_t *b = (int64_t *) malloc(N * sizeof(int64_t));
+                int *b = (int *) malloc(N * sizeof(int));
                 if(b == NULL){
                     fprintf(stderr, "[ERROR] Failed to allocate memory for vector b\n");
                     return MALLOC_ERROR;
                 }
 
                 printf("[INFO] Generating result(empty) vector\n");
-                int64_t *c = (int64_t *) malloc(N * sizeof(int64_t));
+                int *c = (int *) malloc(N * sizeof(int));
                 if(c == NULL){
                     fprintf(stderr, "[ERROR] Failed to allocate memory for vector b\n");
                     return MALLOC_ERROR;
@@ -66,14 +66,20 @@ int main(int argc, char **argv){
                 FILE *bin_v;
                 bin_v = fopen("b", "wb");
 
-                fwrite(b, sizeof(int64_t), N, bin_v);
+                //fwrite(b, sizeof(int), N, bin_v);
+                int k = 33620740;
+                fwrite(&k, sizeof(int), 1, bin_v);
+                k = -33554433;
+                fwrite(&k, sizeof(int), 1, bin_v);
+                k = 118098700;
+                fwrite(&k, sizeof(int), 1, bin_v);
 
                 fclose(bin_v);
                 printf("[INFO] File 'b' is ready!\n");
 
                 printf("[INFO] Writing result(empty) vector to file 'c'\n");
                 bin_v = fopen("c", "wb");
-                fwrite(c, sizeof(int64_t), N, bin_v);
+                fwrite(c, sizeof(int), N, bin_v);
                 fclose(bin_v);
 
                 printf("[INFO] File 'c' is ready!\n");
