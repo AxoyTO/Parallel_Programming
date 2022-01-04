@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -O0
+CFLAGS = -Wall -Werror -O0 -std=c11
 BIN = -o main
 
 .PHONY: all bin test test32 test64 clean
