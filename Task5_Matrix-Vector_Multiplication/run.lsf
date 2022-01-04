@@ -1,0 +1,16 @@
+module load SpectrumMPI
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+#BSUB -n 64 -q normal
+#BSUB -W 0:40
+#BSUB  -o result.out
+#BSUB  -e result.err
+
+mpiexec -n 1 main a b c
+mpiexec -n 2 main a b c
+mpiexec -n 4 main a b c
+mpiexec -n 8 main a b c
+mpiexec -n 16 main a b c
+mpiexec -n 32 main a b c
+mpiexec -n 64 main a b c 
+                                                
