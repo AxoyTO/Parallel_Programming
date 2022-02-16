@@ -364,3 +364,4 @@ MigrationBackup/
 *.clang-format
 WSL2*
 *.json
+*.png
