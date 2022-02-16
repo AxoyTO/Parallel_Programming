@@ -363,3 +363,4 @@ MigrationBackup/
 *.idea
 *.clang-format
 WSL2*
+*.json
