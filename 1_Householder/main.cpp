@@ -180,7 +180,6 @@ int main(int argc, char** argv) {
     int rows = std::stoi(argv[1]);
     int cols = std::stoi(argv[2]);
     generateRandomMatrix(matrix, rows, cols);
-    // displayMatrix(matrix);
     const auto start = clk::now();
     householderReflection(matrix);
     const sec duration = clk::now() - start;
