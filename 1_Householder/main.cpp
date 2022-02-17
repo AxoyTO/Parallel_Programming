@@ -1,33 +1,29 @@
 #include <algorithm>
-#include <functional>
+#include <chrono>
 #include <iostream>
 #include <random>
 #include <vector>
 
 using std::vector;
+using clk = std::chrono::high_resolution_clock;
+using sec = std::chrono::duration<double>;
 
 int generateRandomNumber() {
   std::random_device device;
   std::mt19937 rng(device());
-  std::uniform_int_distribution<std::mt19937::result_type> dist(
-      1, 9);  // distribution in range [1, 6]
+  std::uniform_int_distribution<std::mt19937::result_type> dist(1, 9);
 
   return dist(rng);
 }
 
 void generateRandomMatrix(vector<vector<double>>& matrix, int rows, int cols) {
+  std::cout << "rows: " << rows << " cols:" << cols << "\n";
   for (int i = 0; i < rows; i++) {
     matrix.emplace_back();
     for (double j = 0; j < cols; j++) {
       matrix.at(i).push_back(generateRandomNumber());
     }
   }
-  /*
-  matrix.emplace_back(vector<double>{5, 6, 9, 7});
-  matrix.emplace_back(vector<double>{2, 7, 1, 8});
-  matrix.emplace_back(vector<double>{8, 6, 7, 1});
-  matrix.emplace_back(vector<double>{6, 7, 9, 3});
-  */
 }
 
 template <typename T>
@@ -109,15 +105,15 @@ void matrixMultiplication(const vector<vector<double>>& H,
     }
   }
 
-  std::cout << "--------" << t << "--------\n";
-  // displayMatrix(R);
+  // std::cout << "--------" << t << "--------\n";
+  //  displayMatrix(R);
 
   for (int i = 0; i < R.size(); i++) {
     for (int j = 0; j < R[i].size(); j++) {
       A[i + t][j + t] = R[i][j];
     }
   }
-  displayMatrix(A);
+  // displayMatrix(A);
 }
 
 void householderReflection(vector<vector<double>>& matrix) {
@@ -127,9 +123,9 @@ void householderReflection(vector<vector<double>>& matrix) {
 
   for (int k = 0; k < matrix.size(); k++) {
     x = getColumn(matrix, k);
-    displayVector("x:", x);
+    // displayVector("x:", x);
     double x_norm = euclideanNorm(x);
-    std::cout << "x_norm: " << x_norm << "\n";
+    // std::cout << "x_norm: " << x_norm << "\n";
     if (!x_norm)
       continue;
 
@@ -139,16 +135,16 @@ void householderReflection(vector<vector<double>>& matrix) {
     double x1 = matrix[k][k];
     double sign = (x1 > 0) ? 1 : -1;
 
-    std::cout << "sign: " << sign << "\n";
+    // std::cout << "sign: " << sign << "\n";
     unit_vector[0] = sign * x_norm;
-    displayVector("Unit vector:", unit_vector);
+    // displayVector("Unit vector:", unit_vector);
 
     std::transform(x.begin(), x.end(), unit_vector.begin(), v.begin(),
                    std::plus<double>());
 
-    displayVector("v:", v);
+    // displayVector("v:", v);
     double v_norm = euclideanNorm(v);
-    std::cout << "v_norm: " << v_norm << "\n";
+    // std::cout << "v_norm: " << v_norm << "\n";
 
     std::transform(v.begin(), v.end(), v.begin(),
                    [&v_norm](auto& c) { return c / v_norm; });
@@ -182,10 +178,13 @@ int main(int argc, char** argv) {
   } else {
     vector<vector<double>> matrix;
     int rows = std::stoi(argv[1]);
-    int cols = std::stoi(argv[1]);
+    int cols = std::stoi(argv[2]);
     generateRandomMatrix(matrix, rows, cols);
     // displayMatrix(matrix);
+    const auto start = clk::now();
     householderReflection(matrix);
+    const sec duration = clk::now() - start;
+    std::cout << "Elapsed time: " << duration.count() << " s.\n";
   }
 
   return 0;
