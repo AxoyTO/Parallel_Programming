@@ -7,6 +7,8 @@
 using std::vector;
 using clk = std::chrono::high_resolution_clock;
 using sec = std::chrono::duration<double>;
+using Vector = vector<double>;
+using Matrix = vector<Vector>;
 
 int generateRandomNumber() {
   std::random_device device;
@@ -16,18 +18,26 @@ int generateRandomNumber() {
   return dist(rng);
 }
 
-void generateRandomMatrix(vector<vector<double>>& matrix, int rows, int cols) {
-  std::cout << "rows: " << rows << " cols:" << cols << "\n";
+Matrix generateRandomMatrix(Matrix& matrix, int rows, int cols) {
   for (int i = 0; i < rows; i++) {
     matrix.emplace_back();
     for (double j = 0; j < cols; j++) {
       matrix.at(i).push_back(generateRandomNumber());
     }
   }
+
+  return matrix;
 }
 
-template <typename T>
-void displayMatrix(vector<vector<T>>& matrix) {
+Vector generateRandomVector(Vector& vector, int rows) {
+  for (int i = 0; i < rows; i++) {
+    vector.push_back(generateRandomNumber());
+  }
+
+  return vector;
+}
+
+void displayMatrix(const Matrix& matrix) {
   std::cout << "==============\n";
   for (const auto& r : matrix) {
     for (const auto& c : r) {
@@ -38,7 +48,7 @@ void displayMatrix(vector<vector<T>>& matrix) {
   std::cout << "==============\n";
 }
 
-void displayVector(std::string title, const vector<double>& vec) {
+void displayVector(std::string title, const Vector& vec) {
   std::cout << title << " ";
   for (const auto& v : vec) {
     std::cout << v << " ";
@@ -46,8 +56,8 @@ void displayVector(std::string title, const vector<double>& vec) {
   std::cout << "\n";
 }
 
-vector<double> getColumn(const vector<vector<double>>& matrix, double k) {
-  vector<double> column;
+Vector getColumn(const Matrix& matrix, double k) {
+  Vector column;
   for (double r = k; r < matrix.size(); r++) {
     column.emplace_back(matrix[r][k]);
   }
@@ -55,7 +65,7 @@ vector<double> getColumn(const vector<vector<double>>& matrix, double k) {
   return column;
 }
 
-double euclideanNorm(const vector<double>& vec) {
+double euclideanNorm(const Vector& vec) {
   double norm = 0;
   for (const auto& v : vec) {
     norm += v * v;
@@ -63,21 +73,21 @@ double euclideanNorm(const vector<double>& vec) {
   return std::sqrt(norm);
 }
 
-vector<vector<double>> identityMatrix(int n) {
-  vector<vector<double>> matrix;
+Matrix identityMatrix(int n) {
+  Matrix I;
   for (int i = 0; i < n; i++) {
-    std::vector<double> row(n, 0);
+    Vector row(n, 0);
     row[i] = 1;
-    matrix.emplace_back(row);
+    I.emplace_back(row);
   }
 
-  return matrix;
+  return I;
 }
 
-vector<vector<double>> v_vT_multiplication(vector<double> v) {
-  vector<vector<double>> vvT;
+Matrix v_vT_multiplication(Vector v) {
+  Matrix vvT;
   for (int i = 0; i < v.size(); i++) {
-    vector<double> row;
+    Vector row;
     for (int j = 0; j < v.size(); j++) {
       row.push_back(v[i] * v[j]);
     }
@@ -87,14 +97,12 @@ vector<vector<double>> v_vT_multiplication(vector<double> v) {
   return vvT;
 }
 
-void matrixMultiplication(const vector<vector<double>>& H,
-                          vector<vector<double>>& A,
-                          int t) {
-  vector<vector<double>> R;
+void matrixMultiplication(const Matrix& H, Matrix& A, int t) {
+  Matrix R;
   int i, j, k;
 
   for (i = 0; i < H.size(); ++i) {
-    R.emplace_back(vector<double>(A[0].size() - t, 0));
+    R.emplace_back(Vector(A[0].size() - t, 0));
     for (j = 0; j < A[0].size() - t; ++j) {
       for (k = 0; k < H[0].size(); ++k) {
         R[i][j] += H[i][k] * A[k + t][j + t];
@@ -105,46 +113,72 @@ void matrixMultiplication(const vector<vector<double>>& H,
     }
   }
 
-  // std::cout << "--------" << t << "--------\n";
-  //  displayMatrix(R);
-
   for (int i = 0; i < R.size(); i++) {
     for (int j = 0; j < R[i].size(); j++) {
       A[i + t][j + t] = R[i][j];
     }
   }
-  // displayMatrix(A);
 }
 
-void householderReflection(vector<vector<double>>& matrix) {
-  displayMatrix(matrix);
-  vector<double> x;
-  vector<vector<double>> I, vvT;
+void reverseGaussian(Matrix& A, Vector& b) {
+  Vector x(b.size(), 1);
 
-  for (int k = 0; k < matrix.size(); k++) {
-    x = getColumn(matrix, k);
+  displayMatrix(A);
+  displayVector("newB:", b);
+  int n = b.size();
+  x[n - 1] = b[n - 1] / A[n - 1][n - 1];
+  b[n - 1] /= A[n - 1][n - 1];
+  displayVector("x:", x);
+
+  std::cout << "\n";
+  for (int i = n - 2; i >= 0; i--) {
+    double s = 0.0;
+    for (int j = n - 1; j > i; j--) {
+      std::cout << i << j << "\n";
+      std::cout << "b[" << i << "] = " << b[i] << "\n";
+      std::cout << x[j] << " * " << A[i][j] << " = " << x[j] * A[i][j] << "\n";
+      b[i] -= x[j] * A[i][j];
+      std::cout << "b[" << i << "] = " << b[i] << "\n";
+    }
+    std::cout << "\n";
+
+    // x[i] = b[i] / A[i][i];
+    b[i] = b[i] / A[i][i];
     // displayVector("x:", x);
-    double x_norm = euclideanNorm(x);
-    // std::cout << "x_norm: " << x_norm << "\n";
-    if (!x_norm)
+  }
+
+  displayVector("b:", b);
+  displayVector("x:", x);
+  std::cout << "\n";
+}
+
+void householderReflection(Matrix& A, Vector& b) {
+  for (int i = 0; i < A.size(); i++) {
+    A[i].push_back(b[i]);
+  }
+
+  displayMatrix(A);
+
+  Matrix I, vvT;
+
+  for (int k = 0; k < A.size(); k++) {
+    Vector a = getColumn(A, k);
+    double a_norm = euclideanNorm(a);
+    if (!a_norm)
       continue;
 
-    vector<double> unit_vector(x.size(), 0);
-    vector<double> v(x.size(), 0);
+    Vector unit_vector(a.size(), 0);
+    Vector v(a.size(), 0);
 
-    double x1 = matrix[k][k];
-    double sign = (x1 > 0) ? 1 : -1;
+    double a1 = A[k][k];
+    double sign = (a1 > 0) ? 1 : -1;
 
-    // std::cout << "sign: " << sign << "\n";
-    unit_vector[0] = sign * x_norm;
-    // displayVector("Unit vector:", unit_vector);
+    unit_vector[0] = sign * a_norm;
 
-    std::transform(x.begin(), x.end(), unit_vector.begin(), v.begin(),
+    std::transform(a.begin(), a.end(), unit_vector.begin(), v.begin(),
                    std::plus<double>());
 
-    // displayVector("v:", v);
     double v_norm = euclideanNorm(v);
-    // std::cout << "v_norm: " << v_norm << "\n";
 
     std::transform(v.begin(), v.end(), v.begin(),
                    [&v_norm](auto& c) { return c / v_norm; });
@@ -156,18 +190,37 @@ void householderReflection(vector<vector<double>>& matrix) {
                      [](auto& c) { return c * -2; });
     }
 
-    I = identityMatrix(x.size());
+    I = identityMatrix(a.size());
     for (int i = 0; i < vvT.size(); i++) {
       std::transform(vvT[i].begin(), vvT[i].end(), I[i].begin(), vvT[i].begin(),
                      std::plus<double>());
     }
 
-    // displayMatrix(vvT);
-
-    matrixMultiplication(vvT, matrix, k);
+    matrixMultiplication(vvT, A, k);
   }
 
-  displayMatrix(matrix);
+  // displayMatrix(A);
+  for (int i = 0; i < A.size(); i++) {
+    b[i] = A[i][A[i].size() - 1];
+    A[i].pop_back();
+  }
+
+  int reverse_rank_count = 0;
+  for (int i = 0; i < A.size(); i++) {
+    bool all_zero_row =
+        std::all_of(A[i].begin(), A[i].end(), [](double i) { return i == 0; });
+    if (all_zero_row)
+      reverse_rank_count++;
+  }
+
+  for (int i = 0; i < reverse_rank_count; i++) {
+    A.pop_back();
+    b.pop_back();
+  }
+  displayVector("newB:", b);
+  displayMatrix(A);
+
+  // Vector x = reverseGaussian(A, b);
 }
 
 int main(int argc, char** argv) {
@@ -176,14 +229,22 @@ int main(int argc, char** argv) {
                  "/<binary> <rows> <columns> <number_of_openMP_threads>\n\t"
                  "For example: ./HouseHolder.exe 1024 1024 4\n";
   } else {
-    vector<vector<double>> matrix;
+    Matrix init_A, A;
+    Vector init_b, b;
     int rows = std::stoi(argv[1]);
     int cols = std::stoi(argv[2]);
-    generateRandomMatrix(matrix, rows, cols);
-    const auto start = clk::now();
-    householderReflection(matrix);
-    const sec duration = clk::now() - start;
-    std::cout << "Elapsed time: " << duration.count() << " s.\n";
+    init_A = generateRandomMatrix(A, rows, cols);
+    init_b = generateRandomVector(b, rows);
+    auto start = clk::now();
+    householderReflection(A, b);
+    sec duration = clk::now() - start;
+    std::cout << "Householder Reflection elapsed time: " << duration.count()
+              << " s.\n";
+    start = clk::now();
+    reverseGaussian(A, b);
+    duration = clk::now() - start;
+    std::cout << "Reverse Gaussian elapsed time: " << duration.count()
+              << " s.\n";
   }
 
   return 0;
