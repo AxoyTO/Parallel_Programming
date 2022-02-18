@@ -121,35 +121,27 @@ void matrixMultiplication(const Matrix& H, Matrix& A, int t) {
 }
 
 void reverseGaussian(Matrix& A, Vector& b) {
-  Vector x(b.size(), 1);
+  b[0] = 4;
+  b[1] = -8;
+  b[2] = -3;
+  A[0][0] = 6;
+  A[0][1] = 8;
+  A[0][2] = 4;
+  A[1][1] = -10;
+  A[1][2] = -4;
+  // A[2][1] = 0;
+  A[2][2] = -2;
 
-  displayMatrix(A);
-  displayVector("newB:", b);
   int n = b.size();
-  x[n - 1] = b[n - 1] / A[n - 1][n - 1];
   b[n - 1] /= A[n - 1][n - 1];
-  displayVector("x:", x);
-
-  std::cout << "\n";
   for (int i = n - 2; i >= 0; i--) {
     double s = 0.0;
     for (int j = n - 1; j > i; j--) {
-      std::cout << i << j << "\n";
-      std::cout << "b[" << i << "] = " << b[i] << "\n";
-      std::cout << x[j] << " * " << A[i][j] << " = " << x[j] * A[i][j] << "\n";
-      b[i] -= x[j] * A[i][j];
-      std::cout << "b[" << i << "] = " << b[i] << "\n";
+      b[i] -= b[j] * A[i][j];
     }
-    std::cout << "\n";
-
-    // x[i] = b[i] / A[i][i];
     b[i] = b[i] / A[i][i];
-    // displayVector("x:", x);
   }
-
   displayVector("b:", b);
-  displayVector("x:", x);
-  std::cout << "\n";
 }
 
 void householderReflection(Matrix& A, Vector& b) {
