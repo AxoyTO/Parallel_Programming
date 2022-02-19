@@ -139,8 +139,6 @@ void householderReflection(Matrix& A, Vector& b) {
     A[i].push_back(b[i]);
   }
 
-  displayMatrix(A);
-
   Matrix I, vvT;
 
   for (int k = 0; k < A.size(); k++) {
@@ -181,7 +179,6 @@ void householderReflection(Matrix& A, Vector& b) {
     matrixMultiplication(vvT, A, k);
   }
 
-  // displayMatrix(A);
   for (int i = 0; i < A.size(); i++) {
     b[i] = A[i][A[i].size() - 1];
     A[i].pop_back();
@@ -205,58 +202,47 @@ void householderReflection(Matrix& A, Vector& b) {
 
 void residualVector(const Matrix& A, const Vector& x, const Vector& b) {
   Vector residual_vector(b.size(), 0);
-  displayMatrix(A);
-  displayVector("x:", x);
-  displayVector("b:", b);
 
   for (int i = 0; i < A.size(); i++) {
     double s = 0;
     for (int j = 0; j < A[i].size(); j++) {
-      // std::cout << "-------" << i << " " << j << "--------\n";
-      // std::cout << A[i][j] << " * " << x[i] << "\n";
-      // std::cout << "A[" << i << "][" << j << "] * x[" << i
-      //           << "] = " << A[i][j] * x[i] << "\n";
       s += A[i][j] * x[j];
     }
-    // std::cout << "\n";
-    // residual_vector.push_back(s);
     residual_vector[i] = s;
-    // std::cout << residual_vector[i] << "\n";
   }
 
-  displayVector("residual:", residual_vector);
   for (int i = 0; i < residual_vector.size(); i++) {
     residual_vector[i] -= b[i];
   }
-  displayVector("residual:", residual_vector);
+
   std::cout << "Norm of residual: " << euclideanNorm(residual_vector) << "\n";
 }
 
 int main(int argc, char** argv) {
-  if (argc < 3) {
+  if (argc < 4) {
     std::cout << "Command line format:\n\t."
                  "/<binary> <rows> <columns> <number_of_openMP_threads>\n\t"
                  "For example: ./HouseHolder.exe 1024 1024 4\n";
   } else {
     Matrix init_A, A;
     Vector init_b, b, x;
+    sec T1, T2;
+
     int rows = std::stoi(argv[1]);
     int cols = std::stoi(argv[2]);
     init_A = generateRandomMatrix(A, rows, cols);
     init_b = generateRandomVector(b, rows);
     auto start = clk::now();
     householderReflection(A, b);
-    sec duration = clk::now() - start;
-    std::cout << "Householder Reflection elapsed time: " << duration.count()
+    T1 = clk::now() - start;
+    std::cout << "Householder Reflection elapsed time(T1): " << T1.count()
               << " s.\n";
     start = clk::now();
     x = reverseGaussian(A, b);
-    // displayMatrix(init_A);
-    // displayVector("b:", init_b);
-    // displayVector("x:", x);
-    duration = clk::now() - start;
-    std::cout << "Reverse Gaussian elapsed time: " << duration.count()
-              << " s.\n";
+    T2 = clk::now() - start;
+    std::cout << "Reverse Gaussian elapsed time(T2): " << T2.count() << " s.\n";
+    std::cout << "Total time elapsed(T1+T2): " << (T1 + T2).count() << " s.\n";
+
     residualVector(init_A, x, init_b);
   }
 
