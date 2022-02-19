@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <random>
@@ -107,7 +108,7 @@ void matrixMultiplication(const Matrix& H, Matrix& A, int t) {
       for (k = 0; k < H[0].size(); ++k) {
         R[i][j] += H[i][k] * A[k + t][j + t];
       }
-      if (std::abs(R[i][j]) < 10e-8) {
+      if (std::abs(R[i][j]) < 10e-7) {
         R[i][j] = 0;
       }
     }
@@ -120,18 +121,7 @@ void matrixMultiplication(const Matrix& H, Matrix& A, int t) {
   }
 }
 
-void reverseGaussian(Matrix& A, Vector& b) {
-  b[0] = 4;
-  b[1] = -8;
-  b[2] = -3;
-  A[0][0] = 6;
-  A[0][1] = 8;
-  A[0][2] = 4;
-  A[1][1] = -10;
-  A[1][2] = -4;
-  // A[2][1] = 0;
-  A[2][2] = -2;
-
+Vector reverseGaussian(Matrix& A, Vector& b) {
   int n = b.size();
   b[n - 1] /= A[n - 1][n - 1];
   for (int i = n - 2; i >= 0; i--) {
@@ -141,7 +131,7 @@ void reverseGaussian(Matrix& A, Vector& b) {
     }
     b[i] = b[i] / A[i][i];
   }
-  displayVector("b:", b);
+  return b;
 }
 
 void householderReflection(Matrix& A, Vector& b) {
@@ -209,10 +199,37 @@ void householderReflection(Matrix& A, Vector& b) {
     A.pop_back();
     b.pop_back();
   }
-  displayVector("newB:", b);
-  displayMatrix(A);
 
-  // Vector x = reverseGaussian(A, b);
+  assert(A.size() == A[0].size() && "Infinite solutions exist!");
+}
+
+void residualVector(const Matrix& A, const Vector& x, const Vector& b) {
+  Vector residual_vector(b.size(), 0);
+  displayMatrix(A);
+  displayVector("x:", x);
+  displayVector("b:", b);
+
+  for (int i = 0; i < A.size(); i++) {
+    double s = 0;
+    for (int j = 0; j < A[i].size(); j++) {
+      // std::cout << "-------" << i << " " << j << "--------\n";
+      // std::cout << A[i][j] << " * " << x[i] << "\n";
+      // std::cout << "A[" << i << "][" << j << "] * x[" << i
+      //           << "] = " << A[i][j] * x[i] << "\n";
+      s += A[i][j] * x[j];
+    }
+    // std::cout << "\n";
+    // residual_vector.push_back(s);
+    residual_vector[i] = s;
+    // std::cout << residual_vector[i] << "\n";
+  }
+
+  displayVector("residual:", residual_vector);
+  for (int i = 0; i < residual_vector.size(); i++) {
+    residual_vector[i] -= b[i];
+  }
+  displayVector("residual:", residual_vector);
+  std::cout << "Norm of residual: " << euclideanNorm(residual_vector) << "\n";
 }
 
 int main(int argc, char** argv) {
@@ -222,7 +239,7 @@ int main(int argc, char** argv) {
                  "For example: ./HouseHolder.exe 1024 1024 4\n";
   } else {
     Matrix init_A, A;
-    Vector init_b, b;
+    Vector init_b, b, x;
     int rows = std::stoi(argv[1]);
     int cols = std::stoi(argv[2]);
     init_A = generateRandomMatrix(A, rows, cols);
@@ -233,10 +250,14 @@ int main(int argc, char** argv) {
     std::cout << "Householder Reflection elapsed time: " << duration.count()
               << " s.\n";
     start = clk::now();
-    reverseGaussian(A, b);
+    x = reverseGaussian(A, b);
+    // displayMatrix(init_A);
+    // displayVector("b:", init_b);
+    // displayVector("x:", x);
     duration = clk::now() - start;
     std::cout << "Reverse Gaussian elapsed time: " << duration.count()
               << " s.\n";
+    residualVector(init_A, x, init_b);
   }
 
   return 0;
