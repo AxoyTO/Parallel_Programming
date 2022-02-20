@@ -70,7 +70,9 @@ Vector getColumn(const Matrix& matrix, double k) {
 }
 
 double euclideanNorm(const Vector& vec) {
-  double norm = 0;
+  double norm = 0.0;
+  // !!!!!!!!!!!!!!!!!!!
+  //#pragma omp parallel for reduction(+ : norm)
   for (const auto& v : vec) {
     norm += v * v;
   }
@@ -79,10 +81,14 @@ double euclideanNorm(const Vector& vec) {
 
 Matrix identityMatrix(int n) {
   Matrix I;
+
   for (int i = 0; i < n; i++) {
-    Vector row(n, 0);
-    row[i] = 1;
-    I.emplace_back(row);
+    I.emplace_back(n, 0);
+  }
+
+#pragma omp parallel for
+  for (int i = 0; i < n; i++) {
+    I[i][i] = 1;
   }
 
   return I;
@@ -90,12 +96,16 @@ Matrix identityMatrix(int n) {
 
 Matrix v_vT_multiplication(Vector v) {
   Matrix vvT;
+
   for (int i = 0; i < v.size(); i++) {
-    Vector row;
+    vvT.emplace_back(Vector(v.size(), 0));
+  }
+
+#pragma omp parallel for collapse(2)
+  for (int i = 0; i < v.size(); i++) {
     for (int j = 0; j < v.size(); j++) {
-      row.push_back(v[i] * v[j]);
+      vvT[i][j] = v[i] * v[j];
     }
-    vvT.emplace_back(row);
   }
 
   return vvT;
@@ -103,22 +113,28 @@ Matrix v_vT_multiplication(Vector v) {
 
 void matrixMultiplication(const Matrix& H, Matrix& A, int t) {
   Matrix R;
-  int i, j, k;
 
-  for (i = 0; i < H.size(); ++i) {
+  for (int i = 0; i < H.size(); i++) {
     R.emplace_back(Vector(A[0].size() - t, 0));
-    for (j = 0; j < A[0].size() - t; ++j) {
-      for (k = 0; k < H[0].size(); ++k) {
-        R[i][j] += H[i][k] * A[k + t][j + t];
+  }
+
+#pragma omp parallel for
+  for (int i = 0; i < H.size(); i++) {
+    for (int j = 0; j < A[0].size() - t; j++) {
+      double s = 0;
+      for (int k = 0; k < H[0].size(); k++) {
+        s += H[i][k] * A[k + t][j + t];
       }
+      R[i][j] = s;
       if (std::abs(R[i][j]) < 10e-7) {
         R[i][j] = 0;
       }
     }
   }
 
+#pragma omp parallel for collapse(2)
   for (int i = 0; i < R.size(); i++) {
-    for (int j = 0; j < R[i].size(); j++) {
+    for (int j = 0; j < R[0].size(); j++) {
       A[i + t][j + t] = R[i][j];
     }
   }
@@ -128,7 +144,6 @@ Vector reverseGaussian(Matrix& A, Vector& b) {
   int n = b.size();
   b[n - 1] /= A[n - 1][n - 1];
   for (int i = n - 2; i >= 0; i--) {
-    double s = 0.0;
     for (int j = n - 1; j > i; j--) {
       b[i] -= b[j] * A[i][j];
     }
@@ -138,6 +153,7 @@ Vector reverseGaussian(Matrix& A, Vector& b) {
 }
 
 void householderReflection(Matrix& A, Vector& b) {
+#pragma omp parallel for
   for (int i = 0; i < A.size(); i++) {
     A[i].push_back(b[i]);
   }
@@ -188,6 +204,7 @@ void householderReflection(Matrix& A, Vector& b) {
   }
 
   int reverse_rank_count = 0;
+#pragma omp parallel for
   for (int i = 0; i < A.size(); i++) {
     bool all_zero_row =
         std::all_of(A[i].begin(), A[i].end(), [](double i) { return i == 0; });
@@ -208,12 +225,15 @@ void residualVector(const Matrix& A, const Vector& x, const Vector& b) {
 
   for (int i = 0; i < A.size(); i++) {
     double s = 0;
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#pragma omp parallel for reduction(+ : s)
     for (int j = 0; j < A[i].size(); j++) {
       s += A[i][j] * x[j];
     }
     residual_vector[i] = s;
   }
 
+#pragma omp parallel for
   for (int i = 0; i < residual_vector.size(); i++) {
     residual_vector[i] -= b[i];
   }
