@@ -7,8 +7,6 @@
 #include <vector>
 
 using std::vector;
-using clk = std::chrono::high_resolution_clock;
-using sec = std::chrono::duration<double>;
 using Vector = vector<double>;
 using Matrix = vector<Vector>;
 
@@ -226,7 +224,7 @@ void residualVector(const Matrix& A, const Vector& x, const Vector& b) {
   for (int i = 0; i < A.size(); i++) {
     double s = 0;
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#pragma omp parallel for reduction(+ : s)
+    //#pragma omp parallel for reduction(+ : s)
     for (int j = 0; j < A[i].size(); j++) {
       s += A[i][j] * x[j];
     }
@@ -249,7 +247,7 @@ int main(int argc, char** argv) {
   } else {
     Matrix init_A, A;
     Vector init_b, b, x;
-    sec T1, T2;
+    double T1, T2;
 
     int rows = std::stoi(argv[1]);
     int cols = std::stoi(argv[2]);
@@ -258,16 +256,15 @@ int main(int argc, char** argv) {
 
     init_A = generateRandomMatrix(A, rows, cols);
     init_b = generateRandomVector(b, rows);
-    auto start = clk::now();
+    double start = omp_get_wtime();
     householderReflection(A, b);
-    T1 = clk::now() - start;
-    std::cout << "Householder Reflection elapsed time(T1): " << T1.count()
-              << " s.\n";
-    start = clk::now();
+    T1 = omp_get_wtime() - start;
+    std::cout << "Householder Reflection elapsed time(T1): " << T1 << " s.\n";
+    start = omp_get_wtime();
     x = reverseGaussian(A, b);
-    T2 = clk::now() - start;
-    std::cout << "Reverse Gaussian elapsed time(T2): " << T2.count() << " s.\n";
-    std::cout << "Total time elapsed(T1+T2): " << (T1 + T2).count() << " s.\n";
+    T2 = omp_get_wtime() - start;
+    std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
+    std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";
 
     residualVector(init_A, x, init_b);
   }
