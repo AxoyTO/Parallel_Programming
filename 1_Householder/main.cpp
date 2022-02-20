@@ -1,3 +1,4 @@
+#include <omp.h>
 #include <algorithm>
 #include <cassert>
 #include <chrono>
@@ -11,6 +12,7 @@ using sec = std::chrono::duration<double>;
 using Vector = vector<double>;
 using Matrix = vector<Vector>;
 
+/*
 int generateRandomNumber() {
   std::random_device device;
   std::mt19937 rng(device());
@@ -18,12 +20,13 @@ int generateRandomNumber() {
 
   return dist(rng);
 }
+*/
 
 Matrix generateRandomMatrix(Matrix& matrix, int rows, int cols) {
   for (int i = 0; i < rows; i++) {
     matrix.emplace_back();
     for (double j = 0; j < cols; j++) {
-      matrix.at(i).push_back(generateRandomNumber());
+      matrix.at(i).push_back(rand() % 10);
     }
   }
 
@@ -32,7 +35,7 @@ Matrix generateRandomMatrix(Matrix& matrix, int rows, int cols) {
 
 Vector generateRandomVector(Vector& vector, int rows) {
   for (int i = 0; i < rows; i++) {
-    vector.push_back(generateRandomNumber());
+    vector.push_back(rand() % 10);
   }
 
   return vector;
@@ -161,13 +164,13 @@ void householderReflection(Matrix& A, Vector& b) {
     double v_norm = euclideanNorm(v);
 
     std::transform(v.begin(), v.end(), v.begin(),
-                   [&v_norm](auto& c) { return c / v_norm; });
+                   [&v_norm](double& c) { return c / v_norm; });
 
     vvT = v_vT_multiplication(v);
 
     for (int i = 0; i < vvT.size(); i++) {
       std::transform(vvT[i].begin(), vvT[i].end(), vvT[i].begin(),
-                     [](auto& c) { return c * -2; });
+                     [](double& c) { return c * -2; });
     }
 
     I = identityMatrix(a.size());
@@ -230,6 +233,9 @@ int main(int argc, char** argv) {
 
     int rows = std::stoi(argv[1]);
     int cols = std::stoi(argv[2]);
+    int n_threads = std::stoi(argv[3]);
+    omp_set_num_threads(n_threads);
+
     init_A = generateRandomMatrix(A, rows, cols);
     init_b = generateRandomVector(b, rows);
     auto start = clk::now();
