@@ -3,22 +3,24 @@ import os
 import re
 
 
-def make_script(num_threads_list=[1, 2, 4, 8, 16, 32, 64, 128],
-                sizes_list=[512, 1024]
+def make_script(num_threads_list=[1, 2, 4, 8, 16, 20, 32, 64, 128],
+                sizes_list=[128, 256, 512]
                 ):
 
     with open('ompjob.lsf', 'w') as f:
         header = 'source /polusfs/setenv/setup.SMPI\n' + \
-            'export LC_CTYPE=en_US.UTF-8\n' + \
-            'export LC_ALL = en_US.UTF-8\n' + \
-            '#BSUB -n 20\n' + \
-            '#BSUB -W 00:30\n' + \
+            '#BSUB -n 1 -q normal\n' + \
+            '#BSUB -W 00:45\n' + \
             '#BSUB -o result.out\n' + \
             '#BSUB -e result.err\n'
 
         f.write(header)
         for size in sizes_list:
+            f.write(
+                f'echo "========= MATRIX: {size} x {size} ========="\n')
             for num_threads in num_threads_list:
+                f.write(
+                    f'echo "============ THREADS: {num_threads} ============"\n')
                 f.write(
                     f'OMP_NUM_THREADS={num_threads} mpiexec ./main {size} {size} {num_threads}\n')
 

@@ -254,6 +254,9 @@ int main(int argc, char** argv) {
     int n_threads = std::stoi(argv[3]);
     omp_set_num_threads(n_threads);
 
+    // std::cout << "====== MATRIX: " << rows << " x " << cols
+    //           << " --- THREADS: " << n_threads << " ======\n\n";
+
     init_A = generateRandomMatrix(A, rows, cols);
     init_b = generateRandomVector(b, rows);
     double start = omp_get_wtime();
@@ -265,8 +268,8 @@ int main(int argc, char** argv) {
     T2 = omp_get_wtime() - start;
     std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
     std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";
-
     residualVector(init_A, x, init_b);
+    std::cout << "\n";
   }
 
   return 0;
