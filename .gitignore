@@ -365,3 +365,4 @@ MigrationBackup/
 WSL2*
 *.json
 *.png
+*tempCodeRunnerFile*
