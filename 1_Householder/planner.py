@@ -39,7 +39,7 @@ if __name__ == '__main__':
             r'\w+', re.sub(r'[^ \d]', ' ', argv[1]))]
         num_threads_list = [int(elem) for elem in re.findall(
             r'\w+', re.sub(r'[^ \d]', ' ', argv[2]))]
-        make_script(num_threads_list, sizes_list)
+        make_script(sizes_list, num_threads_list)
     else:
         make_script()
 
