@@ -19,7 +19,7 @@ int generateRandomNumber() {
 }
 */
 
-Matrix generateRandomMatrix(Matrix& matrix, int rows, int cols) {
+Matrix generateRandomMatrix(Matrix& matrix, const int rows, const int cols) {
   for (int i = 0; i < rows; i++) {
     matrix.emplace_back();
     for (double j = 0; j < cols; j++) {
@@ -30,7 +30,7 @@ Matrix generateRandomMatrix(Matrix& matrix, int rows, int cols) {
   return matrix;
 }
 
-Vector generateRandomVector(Vector& vector, int rows) {
+Vector generateRandomVector(Vector& vector, const int rows) {
   for (int i = 0; i < rows; i++) {
     vector.push_back(rand() % 10);
   }
@@ -49,7 +49,7 @@ void displayMatrix(const Matrix& matrix) {
   std::cout << "==============\n";
 }
 
-void displayVector(std::string title, const Vector& vec) {
+void displayVector(const std::string title, const Vector& vec) {
   std::cout << title << " ";
   for (const auto& v : vec) {
     std::cout << v << " ";
@@ -57,7 +57,7 @@ void displayVector(std::string title, const Vector& vec) {
   std::cout << "\n";
 }
 
-Vector getColumn(const Matrix& matrix, double k) {
+Vector getColumn(const Matrix& matrix, const double k) {
   Vector column;
   for (double r = k; r < matrix.size(); r++) {
     column.emplace_back(matrix[r][k]);
@@ -76,7 +76,7 @@ double euclideanNorm(const Vector& vec) {
   return std::sqrt(norm);
 }
 
-Matrix identityMatrix(int n) {
+Matrix identityMatrix(const int n) {
   Matrix I;
 
   for (int i = 0; i < n; i++) {
@@ -91,7 +91,7 @@ Matrix identityMatrix(int n) {
   return I;
 }
 
-Matrix v_vT_multiplication(Vector v) {
+Matrix v_vT_multiplication(const Vector& v) {
   Matrix vvT;
 
   for (int i = 0; i < v.size(); i++) {
@@ -108,7 +108,7 @@ Matrix v_vT_multiplication(Vector v) {
   return vvT;
 }
 
-void matrixMultiplication(const Matrix& H, Matrix& A, int t) {
+void matrixMultiplication(const Matrix& H, Matrix& A, const int t) {
   Matrix R;
 
   for (int i = 0; i < H.size(); i++) {
@@ -137,7 +137,7 @@ void matrixMultiplication(const Matrix& H, Matrix& A, int t) {
   }
 }
 
-Vector reverseGaussian(Matrix& A, Vector& b) {
+Vector reverseGaussian(const Matrix& A, Vector& b) {
   int n = b.size();
   b[n - 1] /= A[n - 1][n - 1];
   for (int i = n - 2; i >= 0; i--) {
@@ -252,9 +252,6 @@ int main(int argc, char** argv) {
     int cols = std::stoi(argv[2]);
     int n_threads = std::stoi(argv[3]);
     omp_set_num_threads(n_threads);
-
-    // std::cout << "====== MATRIX: " << rows << " x " << cols
-    //           << " --- THREADS: " << n_threads << " ======\n\n";
 
     init_A = generateRandomMatrix(A, rows, cols);
     init_b = generateRandomVector(b, rows);
