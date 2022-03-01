@@ -23,7 +23,7 @@ Matrix generateRandomMatrix(Matrix& matrix, const int rows, const int cols) {
   for (int i = 0; i < rows; i++) {
     matrix.emplace_back();
     for (double j = 0; j < cols; j++) {
-      matrix.at(i).push_back(rand() % 10);
+      matrix.at(i).push_back(i + j + 1);
     }
   }
 
@@ -214,6 +214,7 @@ void householderReflection(Matrix& A, Vector& b) {
     b.pop_back();
   }
 
+  displayMatrix(A);
   assert(A.size() == A[0].size() && "Infinite solutions exist!");
 }
 
@@ -254,7 +255,17 @@ int main(int argc, char** argv) {
     omp_set_num_threads(n_threads);
 
     init_A = generateRandomMatrix(A, rows, cols);
-    init_b = generateRandomVector(b, rows);
+    displayMatrix(A);
+    //  init_b = generateRandomVector(b, rows);
+    for (int i = 0; i < rows; i++) {
+      int temp = 0;
+      for (int j = 0; j < cols; j++) {
+        temp += A[i][j];
+      }
+      init_b.push_back(temp);
+      b.push_back(temp);
+    }
+    displayVector("Generated Vector: ", b);
     double start = omp_get_wtime();
     householderReflection(A, b);
     T1 = omp_get_wtime() - start;
@@ -262,6 +273,9 @@ int main(int argc, char** argv) {
     start = omp_get_wtime();
     x = reverseGaussian(A, b);
     T2 = omp_get_wtime() - start;
+
+    std::cout << "Norm of x: " << euclideanNorm(x) << "\n";
+
     std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
     std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";
     residualVector(init_A, x, init_b);
