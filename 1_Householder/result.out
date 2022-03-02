@@ -1,0 +1,221 @@
+Sender: LSF System <lsfadmin@polus-c2-ib.bmc.hpc.cs.msu.ru>
+Subject: Job 871263: <source /polusfs/setenv/setup.SMPI;#BSUB -n 1 -q normal;#BSUB -W 01:00;#BSUB -o result.out;#BSUB -e result.err;echo "========= MATRIX: 128 x 128 =========";echo "============ THREADS: 1 ============";OMP_NUM_THREADS=1 mpiexec ./main 128 128 1;echo "============ THREADS: 2 ============";OMP_NUM_THREADS=2 mpiexec ./main 128 128 2;echo "============ THREADS: 4 ============";OMP_NUM_THREADS=4 mpiexec ./main 128 128 4;echo "============ THREADS: 8 ============";OMP_NUM_THREADS=8 mpiexec ./main 128 128 8;echo "============ THREADS: 16 ============";OMP_NUM_THREADS=16 mpiexec ./main 128 128 16;echo "============ THREADS: 32 ============";OMP_NUM_THREADS=32 mpiexec ./main 128 128 32;echo "============ THREADS: 64 ============";OMP_NUM_THREADS=64 mpiexec ./main 128 128 64;echo "========= MATRIX: 256 x 256 =========";echo "============ THREADS: 1 ============";OMP_NUM_THREADS=1 mpiexec ./main 256 256 1;echo "============ THREADS: 2 ============";OMP_NUM_THREADS=2 mpiexec ./main 256 256 2;echo "============ THREADS: 4 ============";OMP_NUM_THREADS=4 mpiexec ./main 256 256 4;echo "============ THREADS: 8 ============";OMP_NUM_THREADS=8 mpiexec ./main 256 256 8;echo "============ THREADS: 16 ============";OMP_NUM_THREADS=16 mpiexec ./main 256 256 16;echo "============ THREADS: 32 ============";OMP_NUM_THREADS=32 mpiexec ./main 256 256 32;echo "============ THREADS: 64 ============";OMP_NUM_THREADS=64 mpiexec ./main 256 256 64;echo "========= MATRIX: 512 x 512 =========";echo "============ THREADS: 1 ============";OMP_NUM_THREADS=1 mpiexec ./main 512 512 1;echo "============ THREADS: 2 ============";OMP_NUM_THREADS=2 mpiexec ./main 512 512 2;echo "============ THREADS: 4 ============";OMP_NUM_THREADS=4 mpiexec ./main 512 512 4;echo "============ THREADS: 8 ============";OMP_NUM_THREADS=8 mpiexec ./main 512 512 8;echo "============ THREADS: 16 ============";OMP_NUM_THREADS=16 mpiexec ./main 512 512 16;echo "============ THREADS: 32 ============";OMP_NUM_THREADS=32 mpiexec ./main 512 512 32;echo "============ THREADS: 64 ============";OMP_NUM_THREADS=64 mpiexec ./main 512 512 64> in cluster <MSUCluster> Done
+
+Job <source /polusfs/setenv/setup.SMPI;#BSUB -n 1 -q normal;#BSUB -W 01:00;#BSUB -o result.out;#BSUB -e result.err;echo "========= MATRIX: 128 x 128 =========";echo "============ THREADS: 1 ============";OMP_NUM_THREADS=1 mpiexec ./main 128 128 1;echo "============ THREADS: 2 ============";OMP_NUM_THREADS=2 mpiexec ./main 128 128 2;echo "============ THREADS: 4 ============";OMP_NUM_THREADS=4 mpiexec ./main 128 128 4;echo "============ THREADS: 8 ============";OMP_NUM_THREADS=8 mpiexec ./main 128 128 8;echo "============ THREADS: 16 ============";OMP_NUM_THREADS=16 mpiexec ./main 128 128 16;echo "============ THREADS: 32 ============";OMP_NUM_THREADS=32 mpiexec ./main 128 128 32;echo "============ THREADS: 64 ============";OMP_NUM_THREADS=64 mpiexec ./main 128 128 64;echo "========= MATRIX: 256 x 256 =========";echo "============ THREADS: 1 ============";OMP_NUM_THREADS=1 mpiexec ./main 256 256 1;echo "============ THREADS: 2 ============";OMP_NUM_THREADS=2 mpiexec ./main 256 256 2;echo "============ THREADS: 4 ============";OMP_NUM_THREADS=4 mpiexec ./main 256 256 4;echo "============ THREADS: 8 ============";OMP_NUM_THREADS=8 mpiexec ./main 256 256 8;echo "============ THREADS: 16 ============";OMP_NUM_THREADS=16 mpiexec ./main 256 256 16;echo "============ THREADS: 32 ============";OMP_NUM_THREADS=32 mpiexec ./main 256 256 32;echo "============ THREADS: 64 ============";OMP_NUM_THREADS=64 mpiexec ./main 256 256 64;echo "========= MATRIX: 512 x 512 =========";echo "============ THREADS: 1 ============";OMP_NUM_THREADS=1 mpiexec ./main 512 512 1;echo "============ THREADS: 2 ============";OMP_NUM_THREADS=2 mpiexec ./main 512 512 2;echo "============ THREADS: 4 ============";OMP_NUM_THREADS=4 mpiexec ./main 512 512 4;echo "============ THREADS: 8 ============";OMP_NUM_THREADS=8 mpiexec ./main 512 512 8;echo "============ THREADS: 16 ============";OMP_NUM_THREADS=16 mpiexec ./main 512 512 16;echo "============ THREADS: 32 ============";OMP_NUM_THREADS=32 mpiexec ./main 512 512 32;echo "============ THREADS: 64 ============";OMP_NUM_THREADS=64 mpiexec ./main 512 512 64> was submitted from host <polus-ib.bmc.hpc.cs.msu.ru> by user <edu-cmc-sqi21-19> in cluster <MSUCluster> at Tue Feb 22 14:18:29 2022
+Job was executed on host(s) <polus-c2-ib.bmc.hpc.cs.msu.ru>, in queue <normal>, as user <edu-cmc-sqi21-19> in cluster <MSUCluster> at Tue Feb 22 14:18:29 2022
+</home_edu/edu-cmc-sqi21/edu-cmc-sqi21-19> was used as the home directory.
+</home_edu/edu-cmc-sqi21/edu-cmc-sqi21-19/Sem6/1_Householder> was used as the working directory.
+Started at Tue Feb 22 14:18:29 2022
+Terminated at Tue Feb 22 14:42:26 2022
+Results reported at Tue Feb 22 14:42:26 2022
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1 -q normal
+#BSUB -W 01:00
+#BSUB -o result.out
+#BSUB -e result.err
+echo "========= MATRIX: 128 x 128 ========="
+echo "============ THREADS: 1 ============"
+OMP_NUM_THREADS=1 mpiexec ./main 128 128 1
+echo "============ THREADS: 2 ============"
+OMP_NUM_THREADS=2 mpiexec ./main 128 128 2
+echo "============ THREADS: 4 ============"
+OMP_NUM_THREADS=4 mpiexec ./main 128 128 4
+echo "============ THREADS: 8 ============"
+OMP_NUM_THREADS=8 mpiexec ./main 128 128 8
+echo "============ THREADS: 16 ============"
+OMP_NUM_THREADS=16 mpiexec ./main 128 128 16
+echo "============ THREADS: 32 ============"
+OMP_NUM_THREADS=32 mpiexec ./main 128 128 32
+echo "============ THREADS: 64 ============"
+OMP_NUM_THREADS=64 mpiexec ./main 128 128 64
+echo "========= MATRIX: 256 x 256 ========="
+echo "============ THREADS: 1 ============"
+OMP_NUM_THREADS=1 mpiexec ./main 256 256 1
+echo "============ THREADS: 2 ============"
+OMP_NUM_THREADS=2 mpiexec ./main 256 256 2
+echo "============ THREADS: 4 ============"
+OMP_NUM_THREADS=4 mpiexec ./main 256 256 4
+echo "============ THREADS: 8 ============"
+OMP_NUM_THREADS=8 mpiexec ./main 256 256 8
+echo "============ THREADS: 16 ============"
+OMP_NUM_THREADS=16 mpiexec ./main 256 256 16
+echo "============ THREADS: 32 ============"
+OMP_NUM_THREADS=32 mpiexec ./main 256 256 32
+echo "============ THREADS: 64 ============"
+OMP_NUM_THREADS=64 mpiexec ./main 256 256 64
+echo "========= MATRIX: 512 x 512 ========="
+echo "============ THREADS: 1 ============"
+OMP_NUM_THREADS=1 mpiexec ./main 512 512 1
+echo "============ THREADS: 2 ============"
+OMP_NUM_THREADS=2 mpiexec ./main 512 512 2
+echo "============ THREADS: 4 ============"
+OMP_NUM_THREADS=4 mpiexec ./main 512 512 4
+echo "============ THREADS: 8 ============"
+OMP_NUM_THREADS=8 mpiexec ./main 512 512 8
+echo "============ THREADS: 16 ============"
+OMP_NUM_THREADS=16 mpiexec ./main 512 512 16
+echo "============ THREADS: 32 ============"
+OMP_NUM_THREADS=32 mpiexec ./main 512 512 32
+echo "============ THREADS: 64 ============"
+OMP_NUM_THREADS=64 mpiexec ./main 512 512 64
+
+(... more ...)
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   7438.70 sec.
+    Max Memory :                                 39 MB
+    Average Memory :                             29.27 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                73
+    Run time :                                   1441 sec.
+    Turnaround time :                            1437 sec.
+
+The output (if any) follows:
+
+========= MATRIX: 128 x 128 =========
+============ THREADS: 1 ============
+Householder Reflection elapsed time(T1): 2.55403 s.
+Reverse Gaussian elapsed time(T2): 0.000193406 s.
+Total time elapsed(T1+T2): 2.55423 s.
+Norm of residual: 3.72125e-12
+
+============ THREADS: 2 ============
+Householder Reflection elapsed time(T1): 1.33581 s.
+Reverse Gaussian elapsed time(T2): 0.00019858 s.
+Total time elapsed(T1+T2): 1.33601 s.
+Norm of residual: 3.72125e-12
+
+============ THREADS: 4 ============
+Householder Reflection elapsed time(T1): 0.726676 s.
+Reverse Gaussian elapsed time(T2): 0.000199083 s.
+Total time elapsed(T1+T2): 0.726875 s.
+Norm of residual: 3.72125e-12
+
+============ THREADS: 8 ============
+Householder Reflection elapsed time(T1): 0.438285 s.
+Reverse Gaussian elapsed time(T2): 0.000201374 s.
+Total time elapsed(T1+T2): 0.438487 s.
+Norm of residual: 3.72125e-12
+
+============ THREADS: 16 ============
+Householder Reflection elapsed time(T1): 0.440069 s.
+Reverse Gaussian elapsed time(T2): 0.000204843 s.
+Total time elapsed(T1+T2): 0.440274 s.
+Norm of residual: 3.72125e-12
+
+============ THREADS: 32 ============
+Householder Reflection elapsed time(T1): 0.318856 s.
+Reverse Gaussian elapsed time(T2): 0.000207845 s.
+Total time elapsed(T1+T2): 0.319064 s.
+Norm of residual: 3.72125e-12
+
+============ THREADS: 64 ============
+Householder Reflection elapsed time(T1): 0.304783 s.
+Reverse Gaussian elapsed time(T2): 0.000204667 s.
+Total time elapsed(T1+T2): 0.304988 s.
+Norm of residual: 3.72125e-12
+
+========= MATRIX: 256 x 256 =========
+============ THREADS: 1 ============
+Householder Reflection elapsed time(T1): 39.0719 s.
+Reverse Gaussian elapsed time(T2): 0.000762444 s.
+Total time elapsed(T1+T2): 39.0726 s.
+Norm of residual: 3.77915e-12
+
+============ THREADS: 2 ============
+Householder Reflection elapsed time(T1): 19.9458 s.
+Reverse Gaussian elapsed time(T2): 0.000766471 s.
+Total time elapsed(T1+T2): 19.9466 s.
+Norm of residual: 3.77915e-12
+
+============ THREADS: 4 ============
+Householder Reflection elapsed time(T1): 10.4992 s.
+Reverse Gaussian elapsed time(T2): 0.000765573 s.
+Total time elapsed(T1+T2): 10.5 s.
+Norm of residual: 3.77915e-12
+
+============ THREADS: 8 ============
+Householder Reflection elapsed time(T1): 5.96743 s.
+Reverse Gaussian elapsed time(T2): 0.000783082 s.
+Total time elapsed(T1+T2): 5.96821 s.
+Norm of residual: 3.77915e-12
+
+============ THREADS: 16 ============
+Householder Reflection elapsed time(T1): 4.63307 s.
+Reverse Gaussian elapsed time(T2): 0.00100981 s.
+Total time elapsed(T1+T2): 4.63408 s.
+Norm of residual: 3.77915e-12
+
+============ THREADS: 32 ============
+Householder Reflection elapsed time(T1): 3.73553 s.
+Reverse Gaussian elapsed time(T2): 0.00105953 s.
+Total time elapsed(T1+T2): 3.73659 s.
+Norm of residual: 3.77915e-12
+
+============ THREADS: 64 ============
+Householder Reflection elapsed time(T1): 3.40217 s.
+Reverse Gaussian elapsed time(T2): 0.00119463 s.
+Total time elapsed(T1+T2): 3.40337 s.
+Norm of residual: 3.77915e-12
+
+========= MATRIX: 512 x 512 =========
+============ THREADS: 1 ============
+Householder Reflection elapsed time(T1): 617.779 s.
+Reverse Gaussian elapsed time(T2): 0.00304034 s.
+Total time elapsed(T1+T2): 617.782 s.
+Norm of residual: 6.88211e-06
+
+============ THREADS: 2 ============
+Householder Reflection elapsed time(T1): 313.176 s.
+Reverse Gaussian elapsed time(T2): 0.00305012 s.
+Total time elapsed(T1+T2): 313.179 s.
+Norm of residual: 6.88211e-06
+
+============ THREADS: 4 ============
+Householder Reflection elapsed time(T1): 159.805 s.
+Reverse Gaussian elapsed time(T2): 0.00304468 s.
+Total time elapsed(T1+T2): 159.808 s.
+Norm of residual: 6.88211e-06
+
+============ THREADS: 8 ============
+Householder Reflection elapsed time(T1): 87.2194 s.
+Reverse Gaussian elapsed time(T2): 0.00307515 s.
+Total time elapsed(T1+T2): 87.2225 s.
+Norm of residual: 6.88211e-06
+
+============ THREADS: 16 ============
+Householder Reflection elapsed time(T1): 65.5751 s.
+Reverse Gaussian elapsed time(T2): 0.00334411 s.
+Total time elapsed(T1+T2): 65.5784 s.
+Norm of residual: 6.88211e-06
+
+============ THREADS: 32 ============
+Householder Reflection elapsed time(T1): 51.0282 s.
+Reverse Gaussian elapsed time(T2): 0.00356786 s.
+Total time elapsed(T1+T2): 51.0318 s.
+Norm of residual: 6.88211e-06
+
+============ THREADS: 64 ============
+Householder Reflection elapsed time(T1): 42.6757 s.
+Reverse Gaussian elapsed time(T2): 0.00362382 s.
+Total time elapsed(T1+T2): 42.6793 s.
+Norm of residual: 6.88211e-06
+
+
+
+PS:
+
+Read file <result.err> for stderr output of this job.
+

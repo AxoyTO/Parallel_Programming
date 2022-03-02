@@ -3,27 +3,22 @@
 #include <cassert>
 #include <iostream>
 #include <random>
+#include <typeinfo>
 #include <vector>
+
+#define watch(x) std::cout << (#x) << " is " << (x) << "\n"
+
+#define TESTS 1
 
 using std::vector;
 using Vector = vector<double>;
 using Matrix = vector<Vector>;
 
-/*
-int generateRandomNumber() {
-  std::random_device device;
-  std::mt19937 rng(device());
-  std::uniform_int_distribution<std::mt19937::result_type> dist(1, 9);
-
-  return dist(rng);
-}
-*/
-
 Matrix generateRandomMatrix(Matrix& matrix, const int rows, const int cols) {
   for (int i = 0; i < rows; i++) {
     matrix.emplace_back();
     for (double j = 0; j < cols; j++) {
-      matrix.at(i).push_back(i + j + 1);
+      matrix.at(i).push_back(rand() % 10);
     }
   }
 
@@ -214,8 +209,12 @@ void householderReflection(Matrix& A, Vector& b) {
     b.pop_back();
   }
 
-  displayMatrix(A);
+#if TESTS == 0
   assert(A.size() == A[0].size() && "Infinite solutions exist!");
+#else
+  if (A.size() != A[0].size())
+    throw std::exception();
+#endif
 }
 
 void residualVector(const Matrix& A, const Vector& x, const Vector& b) {
@@ -239,6 +238,107 @@ void residualVector(const Matrix& A, const Vector& x, const Vector& b) {
   std::cout << "Norm of residual: " << euclideanNorm(residual_vector) << "\n";
 }
 
+class Tests {
+ public:
+  Tests(int rows, int cols) : rows_(rows), cols_(cols) {}
+
+  Matrix generateRandomTestMatrix(const int test_number) {
+    assert(test_number > 0 && "There is no such test!");
+    assert(test_number < 3 && "There is no such test!");
+
+    switch (test_number) {
+      case 1:
+        for (int i = 0; i < rows_; i++) {
+          A_.emplace_back();
+          for (double j = 0; j < cols_; j++) {
+            A_.at(i).push_back(i + j + 1);
+          }
+        }
+        break;
+      case 2:
+        for (int i = 0; i < rows_; i++) {
+          A_.emplace_back();
+          for (double j = 0; j < cols_; j++) {
+            A_.at(i).push_back(rand() % 100 * 0.1);
+          }
+        }
+        break;
+    }
+
+    return A_;
+  }
+
+  Vector generateRandomTestVector() {
+    for (int i = 0; i < rows_; i++) {
+      double temp = 0;
+      for (int j = 0; j < cols_; j++) {
+        temp += A_[i][j];
+      }
+      b_.push_back(temp);
+    }
+
+    return b_;
+  }
+
+  void reset() {
+    for (int i = 0; i < A_.size(); i++) {
+      A_[i].clear();
+    }
+    A_.clear();
+    b_.clear();
+    x_.clear();
+  }
+
+  bool test1() {
+    reset();
+    std::cout << "Running TEST 1 --> ";
+    generateRandomTestMatrix(1);
+    generateRandomTestVector();
+    try {
+      householderReflection(A_, b_);
+      //Матрица вырожденная -> Программа должна падать в функции
+    } catch (std::exception& ex) {
+      return false;
+    }
+    return true;
+  }
+
+  bool test2() {
+    reset();
+    std::cout << "Running TEST 2 --> \n";
+    generateRandomTestMatrix(2);
+    generateRandomTestVector();
+
+    // displayMatrix(A_);
+    // displayVector("b:", b_);
+    householderReflection(A_, b_);
+    x_ = reverseGaussian(A_, b_);
+
+    const Vector exact_x(rows_, 1);
+    Vector test_result(rows_, 0);
+
+    // displayMatrix(A_);
+    // displayVector("x: ", x_);
+
+    for (int i = 0; i < x_.size(); i++) {
+      test_result[i] = exact_x[i] - x_[i];
+    }
+
+    std::cout << "||x(точное)-x||: " << euclideanNorm(test_result) << "\n";
+    for (const auto& v : x_) {
+      if (int(std::round(v)) != 1) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+ private:
+  int rows_, cols_;
+  Matrix A_;
+  Vector x_, b_;
+};
+
 int main(int argc, char** argv) {
   if (argc < 4) {
     std::cout << "Command line format:\n\t."
@@ -254,17 +354,23 @@ int main(int argc, char** argv) {
     int n_threads = std::stoi(argv[3]);
     omp_set_num_threads(n_threads);
 
+
+#if TESTS == 1
+    std::cout << "Running tests.\n";
+    Tests tests(rows, cols);
+    if (tests.test1() == false)
+      std::cout << "TEST PASSED!\n";
+    else
+      std::cout << "TEST FAILED...\n";
+    if (tests.test2() == true)
+      std::cout << "\n";
+    else
+      std::cout << "TEST FAILED...\n";
+#else
     init_A = generateRandomMatrix(A, rows, cols);
     displayMatrix(A);
-    //  init_b = generateRandomVector(b, rows);
-    for (int i = 0; i < rows; i++) {
-      int temp = 0;
-      for (int j = 0; j < cols; j++) {
-        temp += A[i][j];
-      }
-      init_b.push_back(temp);
-      b.push_back(temp);
-    }
+    init_b = generateRandomVector(b, rows);
+
     displayVector("Generated Vector: ", b);
     double start = omp_get_wtime();
     householderReflection(A, b);
@@ -274,12 +380,14 @@ int main(int argc, char** argv) {
     x = reverseGaussian(A, b);
     T2 = omp_get_wtime() - start;
 
+    displayVector("x: ", x);
     std::cout << "Norm of x: " << euclideanNorm(x) << "\n";
 
     std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
     std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";
     residualVector(init_A, x, init_b);
     std::cout << "\n";
+#endif
   }
 
   return 0;
