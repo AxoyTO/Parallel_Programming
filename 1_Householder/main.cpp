@@ -305,26 +305,21 @@ class Tests {
 
   bool test2() {
     reset();
-    std::cout << "Running TEST 2 --> \n";
+    std::cout << "Running TEST 2 --> ";
     generateRandomTestMatrix(2);
     generateRandomTestVector();
 
-    // displayMatrix(A_);
-    // displayVector("b:", b_);
     householderReflection(A_, b_);
     x_ = reverseGaussian(A_, b_);
 
     const Vector exact_x(rows_, 1);
     Vector test_result(rows_, 0);
 
-    // displayMatrix(A_);
-    // displayVector("x: ", x_);
-
     for (int i = 0; i < x_.size(); i++) {
       test_result[i] = exact_x[i] - x_[i];
     }
 
-    std::cout << "||x(точное)-x||: " << euclideanNorm(test_result) << "\n";
+    // std::cout << "||x(точное)-x||: " << euclideanNorm(test_result) << "\n";
     for (const auto& v : x_) {
       if (int(std::round(v)) != 1) {
         return false;
@@ -354,7 +349,6 @@ int main(int argc, char** argv) {
     int n_threads = std::stoi(argv[3]);
     omp_set_num_threads(n_threads);
 
-
 #if TESTS == 1
     std::cout << "Running tests.\n";
     Tests tests(rows, cols);
@@ -363,7 +357,7 @@ int main(int argc, char** argv) {
     else
       std::cout << "TEST FAILED...\n";
     if (tests.test2() == true)
-      std::cout << "\n";
+      std::cout << "TEST PASSED!\n";
     else
       std::cout << "TEST FAILED...\n";
 #else
