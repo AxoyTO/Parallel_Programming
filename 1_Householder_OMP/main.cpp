@@ -305,7 +305,7 @@ class Tests {
 
   bool test2() {
     reset();
-    std::cout << "Running TEST 2 --> ";
+    std::cout << "Running TEST 2 --> \n";
     generateRandomTestMatrix(2);
     generateRandomTestVector();
 
@@ -319,7 +319,7 @@ class Tests {
       test_result[i] = exact_x[i] - x_[i];
     }
 
-    // std::cout << "||x(точное)-x||: " << euclideanNorm(test_result) << "\n";
+    std::cout << "||x(точное)-x||: " << euclideanNorm(test_result) << "\n";
     for (const auto& v : x_) {
       if (int(std::round(v)) != 1) {
         return false;
@@ -357,7 +357,7 @@ int main(int argc, char** argv) {
     else
       std::cout << "TEST FAILED...\n";
     if (tests.test2() == true)
-      std::cout << "TEST PASSED!\n";
+      std::cout << "\n";
     else
       std::cout << "TEST FAILED...\n";
 #else
