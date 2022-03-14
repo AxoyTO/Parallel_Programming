@@ -366,3 +366,6 @@ WSL2*
 *.json
 *.png
 *tempCodeRunnerFile*
+*.zip
+*.mp4
+*/.vscode
