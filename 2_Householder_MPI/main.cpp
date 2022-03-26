@@ -3,6 +3,8 @@
 #include "functions.hpp"
 
 #define watch(x) std::cout << (#x) << " is " << (x) << "\n"
+#define DEBUG 0
+#define RESULT_OUTPUT 1
 
 using std::vector;
 
@@ -35,8 +37,10 @@ int main(int argc, char** argv) {
     generate_random_matrix(init_A, A, N, rank, comm_size);
     generate_random_vector(init_b, b, init_A, N);
 
+#if DEBUG
     print_matrix(init_A, N, rank, comm_size);
     print_matrix(A, N, rank, comm_size);
+#endif
 
     T1 = MPI_Wtime();
     householder_reflection(A, b, N, rank, comm_size);
@@ -52,35 +56,20 @@ int main(int argc, char** argv) {
                   MPI_COMM_WORLD);
     T2 = temp_reduction_time;
 
+#if DEBUG
     print_matrix(A, N, rank, comm_size);
     print_matrix(init_A, N, rank, comm_size);
+#endif
 
-    gatherResults(res, N, rank, comm_size);
+    gather_results(res, N, rank, comm_size);
 
     double t = residual(init_A, init_b, res, N, rank, comm_size);
 
+#if RESULT_OUTPUT
     if (rank == 0) {
       print_results(comm_size, N, t, T1, T2);
     }
-
-    /*
-        displayVector("Generated Vector: ", b);
-        double start = MPI_Wtime();
-        householderReflection(A, b);
-        T1 = MPI_Wtime() - start;
-        std::cout << "Householder Reflection elapsed time(T1): " << T1 << "
-      s.\n"; start = MPI_Wtime(); x = reverseGaussian(A, b); T2 =
-      MPI_Wtime() - start;
-
-        displayVector("x: ", x);
-        std::cout << "Norm of x: " << euclideanNorm(x) << "\n";
-
-        std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
-        std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";
-        residualVector(init_A, x, init_b);
-        std::cout << "\n";
-      }
-    */
+#endif
     free_matrix(init_A);
     MPI_Finalize();
     return 0;

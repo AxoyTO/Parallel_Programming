@@ -1,6 +1,14 @@
 #include "functions.hpp"
 #include <map>
 
+double random_number_generator() {
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<std::mt19937::result_type> dist(1, 10);
+
+  return dist(rng);
+}
+
 void generate_random_matrix(Matrix& init_A,
                             Matrix& A,
                             const int N,
@@ -11,12 +19,13 @@ void generate_random_matrix(Matrix& init_A,
 
   for (int i = 0; i < A.size(); i++) {
     for (int j = 0; j < N; j++) {
+      double num = random_number_generator();
       if (A[i].rank == j) {
-        init_A[i].col[j] = 1.0 / double(1 + A[i].rank + j) + 0.1;
-        A[i].col[j] = 1.0 / double(1 + A[i].rank + j) + 0.1;
+        init_A[i].col[j] = num;
+        A[i].col[j] = num;
       } else {
-        init_A[i].col[j] = 1.0 / double(1 + A[i].rank + j);
-        A[i].col[j] = 1.0 / double(1 + A[i].rank + j);
+        init_A[i].col[j] = num;
+        A[i].col[j] = num;
       }
     }
   }
@@ -64,7 +73,7 @@ void print_matrix(Matrix A, int N, int rank, int comm_size) {
     std::sort(A.begin(), A.end(), cmpA);
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < A.size(); j++)
-        if (fabs(A[j].col[i]) < EPS)
+        if (std::abs(A[j].col[i]) < 10e-7)
           std::cout << 0 << " ";
         else
           std::cout << A[j].col[i] << " ";
@@ -81,48 +90,50 @@ void print_matrix(Matrix A, int N, int rank, int comm_size) {
   }
 }
 
-double euclideanNorm(const Vector& vec) {
+/*
+double euclidean_norm(const Vector& vec) {
   double norm = 0.0;
   for (const auto& v : vec) {
     norm += v * v;
   }
   return std::sqrt(norm);
 }
+*/
 
 void householder_reflection(Matrix& A,
                             Vector& b,
                             int N,
                             int rank,
                             int comm_size) {
-  int p_num = 0;  // Process
-  int cntColumn = 0;
+  int p_num = 0;    // Process
+  int col_num = 0;  // A column
 
   for (int i = 0; i < N - 1; ++i) {
     if (p_num == rank) {
-      // Составить x
+      // x
       double S = 0.0;
       for (int j = i + 1; j < N; ++j)
-        S += A[cntColumn].col[j] * A[cntColumn].col[j];
+        S += A[col_num].col[j] * A[col_num].col[j];
 
-      double a = sqrt(S + A[cntColumn].col[i] * A[cntColumn].col[i]);
+      double a = sqrt(S + A[col_num].col[i] * A[col_num].col[i]);
 
       double* x;
       x = (double*)malloc(N * sizeof(double));
       memset(x, 0, N * sizeof(double));
 
-      x[i] = A[cntColumn].col[i] - a;
+      x[i] = A[col_num].col[i] - a;
       for (int j = i + 1; j < N; ++j)
-        x[j] = A[cntColumn].col[j];
+        x[j] = A[col_num].col[j];
 
-      double normX = sqrt(S + x[i] * x[i]);
+      double x_norm = sqrt(S + x[i] * x[i]);
 
-      if (fabs(normX) > EPS)
+      if (std::abs(x_norm) > 10e-7)
         for (int j = 0; j < N; ++j)
-          x[j] /= normX;
+          x[j] /= x_norm;
 
       MPI_Bcast(x, N, MPI_DOUBLE, p_num, MPI_COMM_WORLD);
 
-      // Произвести перемножение
+      // matmult
       for (int j = 0; j < A.size(); j++) {
         double sum = 0;
         for (int k = 0; k < N; ++k)
@@ -140,7 +151,7 @@ void householder_reflection(Matrix& A,
         b[j] -= 2 * sum * x[j];
 
       free(x);
-      cntColumn++;
+      col_num++;
     } else {
       double* x;
       x = (double*)malloc(N * sizeof(double));
@@ -177,62 +188,63 @@ void reverse_gaussian(Matrix& A,
                       int N,
                       int rank,
                       int comm_size) {
-  int cntStep = N - 1;
-  int cntColumn = A.size() - 1;
-  int receiver = cntStep % comm_size;
+  int step = N - 1;  // Step
+  int col_num = A.size() - 1;
+  int p_receiver = step % comm_size;
 
-  while (cntStep >= 0) {
-    if ((cntColumn >= 0) && (A[cntColumn].rank == cntStep)) {
-      double x = b[cntStep];
+  while (step >= 0) {
+    if ((col_num >= 0) && (A[col_num].rank == step)) {
+      double x = b[step];
       for (int k = 0; k < res.size(); k++)
-        x -= res[k].second * A[res[k].first / comm_size].col[cntStep];
+        x -= res[k].second * A[res[k].first / comm_size].col[step];
 
-      double tmpX;
-      MPI_Reduce(&x, &tmpX, 1, MPI_DOUBLE, MPI_SUM, receiver, MPI_COMM_WORLD);
-      x = tmpX;
+      double x_temp;
+      MPI_Reduce(&x, &x_temp, 1, MPI_DOUBLE, MPI_SUM, p_receiver,
+                 MPI_COMM_WORLD);
+      x = x_temp;
 
-      x /= A[cntColumn].col[cntStep];
+      x /= A[col_num].col[step];
 
-      res.push_back(std::pair<int, double>(cntStep, x));
-      cntColumn--;
+      res.push_back(std::pair<int, double>(step, x));
+      col_num--;
     } else if (res.size()) {
-      double sendX = 0;
+      double x_send = 0;
       for (int k = 0; k < res.size(); k++)
-        sendX += res[k].second * A[res[k].first / comm_size].col[cntStep];
-      sendX *= -1;
+        x_send += res[k].second * A[res[k].first / comm_size].col[step];
+      x_send *= -1;
 
-      double tmpSendX;
-      MPI_Reduce(&sendX, &tmpSendX, 1, MPI_DOUBLE, MPI_SUM, receiver,
+      double x_temp_send;
+      MPI_Reduce(&x_send, &x_temp_send, 1, MPI_DOUBLE, MPI_SUM, p_receiver,
                  MPI_COMM_WORLD);
     } else {
       double null = 0.0;
       double tmpNull = 0.0;
-      MPI_Reduce(&null, &tmpNull, 1, MPI_DOUBLE, MPI_SUM, receiver,
+      MPI_Reduce(&null, &tmpNull, 1, MPI_DOUBLE, MPI_SUM, p_receiver,
                  MPI_COMM_WORLD);
     }
 
-    cntStep--;
-    receiver = cntStep % comm_size;
+    step--;
+    p_receiver = step % comm_size;
   }
 }
 
-void gatherResults(std::vector<std::pair<int, double>>& res,
-                   int N,
-                   int rank,
-                   int comm_size) {
+void gather_results(std::vector<std::pair<int, double>>& res,
+                    int N,
+                    int rank,
+                    int comm_size) {
   if (rank == 0) {
     for (int i = 1; i < comm_size; ++i) {
       int cntX;
       MPI_Recv(&cntX, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
                MPI_STATUS_IGNORE);
       for (int j = 0; j < cntX; ++j) {
-        int numx;
+        int x_num;
         double x;
-        MPI_Recv(&numx, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
+        MPI_Recv(&x_num, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
         MPI_Recv(&x, 1, MPI_DOUBLE, i, MPI_ANY_TAG, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        res.push_back(std::pair<int, double>(numx, x));
+        res.push_back(std::pair<int, double>(x_num, x));
       }
     }
   } else {
@@ -251,16 +263,16 @@ double residual(Matrix& init_A,
                 int N,
                 int rank,
                 int comm_size) {
-  std::map<int, double> resMap;
+  std::map<int, double> result_map;
   for (int i = 0; i < res.size(); ++i)
-    resMap[res[i].first] = res[i].second;
+    result_map[res[i].first] = res[i].second;
 
   if (rank == 0) {
     double* tmp = (double*)malloc(N * sizeof(double));
     memset(tmp, 0, N * sizeof(double));
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < init_A.size(); j++)
-        tmp[i] += init_A[j].col[i] * resMap[init_A[j].rank];
+        tmp[i] += init_A[j].col[i] * result_map[init_A[j].rank];
     }
 
     double* tmp2 = (double*)malloc(N * sizeof(double));
@@ -278,7 +290,7 @@ double residual(Matrix& init_A,
     memset(tmp, 0, N * sizeof(double));
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < init_A.size(); j++)
-        tmp[i] += init_A[j].col[i] * resMap[init_A[j].rank];
+        tmp[i] += init_A[j].col[i] * result_map[init_A[j].rank];
     }
 
     MPI_Reduce(tmp, NULL, N, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -314,6 +326,6 @@ void print_results(const int comm_size,
   std::cout << "MPI Processes: " << comm_size << "\n";
   std::cout << "Matrix size: " << N << "\n";
   std::cout << "Residual: " << t << "\n";
-  std::cout << "Householder Reflection elapsed time(T1): " << T1 << "\n";
-  std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << "\n";
+  std::cout << "Householder Reflection elapsed time(T1): " << T1 << " s.\n";
+  std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
 }

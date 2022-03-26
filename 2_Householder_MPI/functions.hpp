@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#define EPS 0.0000000000000000001
-
 struct Column {
   double* col;
   int rank;
@@ -20,6 +18,8 @@ struct Column {
 
 using Vector = std::vector<double>;
 using Matrix = std::vector<Column>;
+
+double random_number_generator();
 
 void generate_random_matrix(Matrix& init_A,
                             Matrix& A,
@@ -34,7 +34,7 @@ void generate_random_vector(Vector& init_b,
 
 void print_matrix(Matrix A, int N, int rank, int comm_size);
 
-double euclideanNorm(const Vector& vec);
+// double euclidean_norm(const Vector& vec);
 
 void householder_reflection(Matrix& A,
                             Vector& b,
@@ -49,10 +49,10 @@ void reverse_gaussian(Matrix& A,
                       int rank,
                       int comm_size);
 
-void gatherResults(std::vector<std::pair<int, double>>& res,
-                   int N,
-                   int rank,
-                   int comm_size);
+void gather_results(std::vector<std::pair<int, double>>& res,
+                    int N,
+                    int rank,
+                    int comm_size);
 
 double residual(Matrix& init_A,
                 Vector& init_b,
