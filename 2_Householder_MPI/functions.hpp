@@ -54,12 +54,12 @@ void gather_results(std::vector<std::pair<int, double>>& res,
                     int rank,
                     int comm_size);
 
-double residual(Matrix& init_A,
-                Vector& init_b,
-                std::vector<std::pair<int, double>>& res,
-                int N,
-                int rank,
-                int comm_size);
+double norm_of_residual_vector(Matrix& init_A,
+                               Vector& init_b,
+                               std::vector<std::pair<int, double>>& res,
+                               int N,
+                               int rank,
+                               int comm_size);
 
 void allocate_matrix(Matrix& A, const int N, int rank, int comm_size);
 

@@ -1,6 +1,8 @@
 #include "functions.hpp"
 #include <map>
 
+#define RANDOM_GEN 1
+
 double random_number_generator() {
   std::random_device dev;
   std::mt19937 rng(dev());
@@ -19,7 +21,11 @@ void generate_random_matrix(Matrix& init_A,
 
   for (int i = 0; i < A.size(); i++) {
     for (int j = 0; j < N; j++) {
+#if RANDOM_GEN
       double num = random_number_generator();
+#else
+      double num = 1.0 / double(1 + A[i].rank + j) + 0.1;
+#endif
       if (A[i].rank == j) {
         init_A[i].col[j] = num;
         A[i].col[j] = num;
@@ -110,7 +116,7 @@ void householder_reflection(Matrix& A,
 
   for (int i = 0; i < N - 1; ++i) {
     if (p_num == rank) {
-      // x
+      // Составить x
       double S = 0.0;
       for (int j = i + 1; j < N; ++j)
         S += A[col_num].col[j] * A[col_num].col[j];
@@ -234,10 +240,10 @@ void gather_results(std::vector<std::pair<int, double>>& res,
                     int comm_size) {
   if (rank == 0) {
     for (int i = 1; i < comm_size; ++i) {
-      int cntX;
-      MPI_Recv(&cntX, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
+      int x_row;
+      MPI_Recv(&x_row, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
                MPI_STATUS_IGNORE);
-      for (int j = 0; j < cntX; ++j) {
+      for (int j = 0; j < x_row; ++j) {
         int x_num;
         double x;
         MPI_Recv(&x_num, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
@@ -257,12 +263,12 @@ void gather_results(std::vector<std::pair<int, double>>& res,
   }
 }
 
-double residual(Matrix& init_A,
-                Vector& init_b,
-                std::vector<std::pair<int, double>>& res,
-                int N,
-                int rank,
-                int comm_size) {
+double norm_of_residual_vector(Matrix& init_A,
+                               Vector& init_b,
+                               std::vector<std::pair<int, double>>& res,
+                               int N,
+                               int rank,
+                               int comm_size) {
   std::map<int, double> result_map;
   for (int i = 0; i < res.size(); ++i)
     result_map[res[i].first] = res[i].second;
@@ -325,7 +331,8 @@ void print_results(const int comm_size,
                    const double T2) {
   std::cout << "MPI Processes: " << comm_size << "\n";
   std::cout << "Matrix size: " << N << "\n";
-  std::cout << "Residual: " << t << "\n";
+  std::cout << "Norm of residual vector: " << t << "\n";
   std::cout << "Householder Reflection elapsed time(T1): " << T1 << " s.\n";
   std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
+  std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";
 }
