@@ -1,0 +1,62 @@
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 32 -q normal
+#BSUB -W 00:45
+#BSUB -o result.out
+#BSUB -e result.err
+echo "========= MATRIX: 128 x 128 ========="
+echo "========= PROCESSES: 1 ========="
+OMP_NUM_THREADS=1 mpiexec -n 1 ./main 128
+echo "========= PROCESSES: 2 ========="
+OMP_NUM_THREADS=1 mpiexec -n 2 ./main 128
+echo "========= PROCESSES: 4 ========="
+OMP_NUM_THREADS=1 mpiexec -n 4 ./main 128
+echo "========= PROCESSES: 8 ========="
+OMP_NUM_THREADS=1 mpiexec -n 8 ./main 128
+echo "========= PROCESSES: 16 ========="
+OMP_NUM_THREADS=1 mpiexec -n 16 ./main 128
+echo "========= PROCESSES: 20 ========="
+OMP_NUM_THREADS=1 mpiexec -n 20 ./main 128
+echo "========= PROCESSES: 32 ========="
+OMP_NUM_THREADS=1 mpiexec -n 32 ./main 128
+echo "========= PROCESSES: 64 ========="
+OMP_NUM_THREADS=1 mpiexec -n 64 ./main 128
+echo "========= PROCESSES: 128 ========="
+OMP_NUM_THREADS=1 mpiexec -n 128 ./main 128
+echo "========= MATRIX: 256 x 256 ========="
+echo "========= PROCESSES: 1 ========="
+OMP_NUM_THREADS=1 mpiexec -n 1 ./main 256
+echo "========= PROCESSES: 2 ========="
+OMP_NUM_THREADS=1 mpiexec -n 2 ./main 256
+echo "========= PROCESSES: 4 ========="
+OMP_NUM_THREADS=1 mpiexec -n 4 ./main 256
+echo "========= PROCESSES: 8 ========="
+OMP_NUM_THREADS=1 mpiexec -n 8 ./main 256
+echo "========= PROCESSES: 16 ========="
+OMP_NUM_THREADS=1 mpiexec -n 16 ./main 256
+echo "========= PROCESSES: 20 ========="
+OMP_NUM_THREADS=1 mpiexec -n 20 ./main 256
+echo "========= PROCESSES: 32 ========="
+OMP_NUM_THREADS=1 mpiexec -n 32 ./main 256
+echo "========= PROCESSES: 64 ========="
+OMP_NUM_THREADS=1 mpiexec -n 64 ./main 256
+echo "========= PROCESSES: 128 ========="
+OMP_NUM_THREADS=1 mpiexec -n 128 ./main 256
+echo "========= MATRIX: 512 x 512 ========="
+echo "========= PROCESSES: 1 ========="
+OMP_NUM_THREADS=1 mpiexec -n 1 ./main 512
+echo "========= PROCESSES: 2 ========="
+OMP_NUM_THREADS=1 mpiexec -n 2 ./main 512
+echo "========= PROCESSES: 4 ========="
+OMP_NUM_THREADS=1 mpiexec -n 4 ./main 512
+echo "========= PROCESSES: 8 ========="
+OMP_NUM_THREADS=1 mpiexec -n 8 ./main 512
+echo "========= PROCESSES: 16 ========="
+OMP_NUM_THREADS=1 mpiexec -n 16 ./main 512
+echo "========= PROCESSES: 20 ========="
+OMP_NUM_THREADS=1 mpiexec -n 20 ./main 512
+echo "========= PROCESSES: 32 ========="
+OMP_NUM_THREADS=1 mpiexec -n 32 ./main 512
+echo "========= PROCESSES: 64 ========="
+OMP_NUM_THREADS=1 mpiexec -n 64 ./main 512
+echo "========= PROCESSES: 128 ========="
+OMP_NUM_THREADS=1 mpiexec -n 128 ./main 512
