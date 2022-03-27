@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     if (comm_size > N) {
       if (rank == 0)
         std::cout
-            << "[ERROR] Processes can't be more than the size of matrix!\n\n";
+            << "[ERROR] Processes can't be more than the size of matrix!\n";
       MPI_Finalize();
       return 0;
     }
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 
     gather_results(res, N, rank, comm_size);
 
-    double t = residual(init_A, init_b, res, N, rank, comm_size);
+    double t = norm_of_residual_vector(init_A, init_b, res, N, rank, comm_size);
 
 #if RESULT_OUTPUT
     if (rank == 0) {
