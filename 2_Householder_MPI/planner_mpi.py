@@ -4,17 +4,17 @@ import re
 
 
 def make_script(
-    num_processes_list=[1, 2, 4, 8, 16, 20, 32], sizes_list=[128, 256, 512, 1024, 2048, 4096]
+    num_processes_list=[1, 2, 4, 8, 16, 20, 32],
+    sizes_list=[128, 256, 512, 1024, 2048, 4096],
 ):
     with open("mpijob.lsf", "w") as f:
-        header = ( 
+        header = (
             "source /polusfs/setenv/setup.SMPI\n"
             + f"#BSUB -n {num_processes_list[-1]} -q normal\n"
             + "#BSUB -W 03:00\n"
             + "#BSUB -o result.out\n"
             + "#BSUB -e result.err\n"
-	)
-     
+        )
 
         f.write(header)
         for size in sizes_list:
