@@ -363,6 +363,7 @@ MigrationBackup/
 # Unnecessary
 *.pdf
 !*/Report.pdf
+*.docx
 *.txt
 *.idea
 *.clang-format
