@@ -362,6 +362,7 @@ MigrationBackup/
 
 # Unnecessary
 *.pdf
+!*/Report.pdf
 *.txt
 *.idea
 *.clang-format
