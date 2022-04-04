@@ -5,7 +5,7 @@
 
 #define watch(x) std::cout << (#x) << " is " << (x) << "\n"
 #define TEST 1
-#define DEBUG 0
+#define DEBUG 1
 #define RESULT_OUTPUT 1
 
 using std::vector;
@@ -41,7 +41,8 @@ int main(int argc, char** argv) {
 
 #if DEBUG
     print_matrix(init_A, N, rank, comm_size);
-    print_matrix(A, N, rank, comm_size);
+    print_vector(init_b, rank);
+    // print_matrix(A, N, rank, comm_size);
 #endif
 
     T1 = MPI_Wtime();
@@ -72,8 +73,8 @@ int main(int argc, char** argv) {
     T2 = temp_reduction_time;
 
 #if DEBUG
-    print_matrix(A, N, rank, comm_size);
-    print_matrix(init_A, N, rank, comm_size);
+    // print_matrix(init_A, N, rank, comm_size);
+    // print_matrix(A, N, rank, comm_size);
 #endif
 
     gather_results(res, N, rank, comm_size);

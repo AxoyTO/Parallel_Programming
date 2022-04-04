@@ -25,6 +25,7 @@ void generate_random_matrix(Matrix& init_A,
       double num = random_number_generator();
 #else
       double num = 1.0 / double(1 + A[i].rank + j) + 0.1;
+      // double num = 1;
 #endif
       if (A[i].rank == j) {
         init_A[i].col[j] = num;
@@ -42,10 +43,15 @@ void generate_random_vector(Vector& init_b,
                             const Matrix& A,
                             const int N) {
   for (int j = 0; j < N; j++) {
+#if RANDOM_GEN
+    double sum = random_number_generator();
+#else
     double sum = 0;
     for (int i = 0; i < A.size(); i++)
-      if (A[i].rank % 2)
+      if (A[i].rank % 2) {
         sum += A[i].col[j];
+      }
+#endif
     double res;
     MPI_Allreduce(&sum, &res, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     init_b[j] = res;
@@ -93,6 +99,16 @@ void print_matrix(Matrix A, const int N, int rank, int comm_size) {
       MPI_Send(A[i].col, N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
       MPI_Send(&(A[i].rank), 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
+  }
+}
+
+void print_vector(Vector& b, int rank) {
+  if (rank == 0) {
+    std::cout << "Vector: ";
+    for (const auto& v : b) {
+      std::cout << v << " ";
+    }
+    std::cout << "\n==============\n";
   }
 }
 

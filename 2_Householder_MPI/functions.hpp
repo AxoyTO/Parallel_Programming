@@ -34,6 +34,8 @@ void generate_random_vector(Vector& init_b,
 
 void print_matrix(Matrix A, const int N, int rank, int comm_size);
 
+void print_vector(Vector& b, int rank);
+
 // double euclidean_norm(const Vector& vec);
 
 void householder_reflection(Matrix& A,
