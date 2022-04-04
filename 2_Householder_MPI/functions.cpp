@@ -57,7 +57,7 @@ bool cmpA(Column a, Column b) {
   return a.rank < b.rank;
 }
 
-void print_matrix(Matrix A, int N, int rank, int comm_size) {
+void print_matrix(Matrix A, const int N, int rank, int comm_size) {
   if (rank == 0) {
     std::cout << "==============\n";
     for (int j = 1; j < comm_size; j++) {
@@ -108,7 +108,7 @@ double euclidean_norm(const Vector& vec) {
 
 void householder_reflection(Matrix& A,
                             Vector& b,
-                            int N,
+                            const int N,
                             int rank,
                             int comm_size) {
   int p_num = 0;    // Process
@@ -116,7 +116,6 @@ void householder_reflection(Matrix& A,
 
   for (int i = 0; i < N - 1; ++i) {
     if (p_num == rank) {
-      // Составить x
       double S = 0.0;
       for (int j = i + 1; j < N; ++j)
         S += A[col_num].col[j] * A[col_num].col[j];
@@ -191,7 +190,7 @@ void householder_reflection(Matrix& A,
 void reverse_gaussian(Matrix& A,
                       Vector& b,
                       std::vector<std::pair<int, double>>& res,
-                      int N,
+                      const int N,
                       int rank,
                       int comm_size) {
   int step = N - 1;  // Step
@@ -235,7 +234,7 @@ void reverse_gaussian(Matrix& A,
 }
 
 void gather_results(std::vector<std::pair<int, double>>& res,
-                    int N,
+                    const int N,
                     int rank,
                     int comm_size) {
   if (rank == 0) {
@@ -266,7 +265,7 @@ void gather_results(std::vector<std::pair<int, double>>& res,
 double norm_of_residual_vector(Matrix& init_A,
                                Vector& init_b,
                                std::vector<std::pair<int, double>>& res,
-                               int N,
+                               const int N,
                                int rank,
                                int comm_size) {
   std::map<int, double> result_map;
@@ -306,7 +305,7 @@ double norm_of_residual_vector(Matrix& init_A,
   return 0;
 }
 
-void allocate_matrix(Matrix& A, int N, int rank, int comm_size) {
+void allocate_matrix(Matrix& A, const int N, int rank, int comm_size) {
   int size = N / comm_size + (rank < (N % comm_size) ? 1 : 0);
   A.resize(size);
 
@@ -329,8 +328,8 @@ void print_results(const int comm_size,
                    const double t,
                    const double T1,
                    const double T2) {
-  std::cout << "MPI Processes: " << comm_size << "\n";
-  std::cout << "Matrix size: " << N << "\n";
+  // std::cout << "MPI Processes: " << comm_size << "\n";
+  // std::cout << "Matrix size: " << N << "\n";
   std::cout << "Norm of residual vector: " << t << "\n";
   std::cout << "Householder Reflection elapsed time(T1): " << T1 << " s.\n";
   std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";

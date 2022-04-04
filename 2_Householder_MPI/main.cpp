@@ -1,8 +1,10 @@
 #include <mpi.h>
 #include <iostream>
 #include "functions.hpp"
+#include "tests.hpp"
 
 #define watch(x) std::cout << (#x) << " is " << (x) << "\n"
+#define TEST 1
 #define DEBUG 0
 #define RESULT_OUTPUT 1
 
@@ -44,6 +46,19 @@ int main(int argc, char** argv) {
 
     T1 = MPI_Wtime();
     householder_reflection(A, b, N, rank, comm_size);
+
+#if TEST
+    if (check_matrix_singularity(A, N, rank, comm_size)) {
+      if (rank == 0)
+        std::cout << "[INFO] Infinite solutions exist!\n";
+
+      free_matrix(init_A);
+      free_matrix(A);
+      MPI_Finalize();
+      return 0;
+    }
+#endif
+
     T1 = MPI_Wtime() - T1;
     MPI_Allreduce(&T1, &temp_reduction_time, 1, MPI_DOUBLE, MPI_MAX,
                   MPI_COMM_WORLD);
@@ -71,6 +86,7 @@ int main(int argc, char** argv) {
     }
 #endif
     free_matrix(init_A);
+    free_matrix(A);
     MPI_Finalize();
     return 0;
   }

@@ -32,32 +32,32 @@ void generate_random_vector(Vector& init_b,
                             const Matrix& A,
                             const int N);
 
-void print_matrix(Matrix A, int N, int rank, int comm_size);
+void print_matrix(Matrix A, const int N, int rank, int comm_size);
 
 // double euclidean_norm(const Vector& vec);
 
 void householder_reflection(Matrix& A,
                             Vector& b,
-                            int N,
+                            const int N,
                             int rank,
                             int comm_size);
 
 void reverse_gaussian(Matrix& A,
                       Vector& b,
                       std::vector<std::pair<int, double>>& res,
-                      int N,
+                      const int N,
                       int rank,
                       int comm_size);
 
 void gather_results(std::vector<std::pair<int, double>>& res,
-                    int N,
+                    const int N,
                     int rank,
                     int comm_size);
 
 double norm_of_residual_vector(Matrix& init_A,
                                Vector& init_b,
                                std::vector<std::pair<int, double>>& res,
-                               int N,
+                               const int N,
                                int rank,
                                int comm_size);
 
