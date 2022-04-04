@@ -325,12 +325,12 @@ void free_matrix(std::vector<Column>& A) {
 
 void print_results(const int comm_size,
                    const int N,
-                   const double t,
+                   const double residual_norm,
                    const double T1,
                    const double T2) {
   // std::cout << "MPI Processes: " << comm_size << "\n";
   // std::cout << "Matrix size: " << N << "\n";
-  std::cout << "Norm of residual vector: " << t << "\n";
+  std::cout << "Norm of residual vector: " << residual_norm << "\n";
   std::cout << "Householder Reflection elapsed time(T1): " << T1 << " s.\n";
   std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
   std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";

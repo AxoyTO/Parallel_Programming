@@ -78,11 +78,12 @@ int main(int argc, char** argv) {
 
     gather_results(res, N, rank, comm_size);
 
-    double t = norm_of_residual_vector(init_A, init_b, res, N, rank, comm_size);
+    double residual_norm =
+        norm_of_residual_vector(init_A, init_b, res, N, rank, comm_size);
 
 #if RESULT_OUTPUT
     if (rank == 0) {
-      print_results(comm_size, N, t, T1, T2);
+      print_results(comm_size, N, residual_norm, T1, T2);
     }
 #endif
     free_matrix(init_A);
