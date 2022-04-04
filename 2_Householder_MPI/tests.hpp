@@ -1,6 +1,8 @@
 #pragma once
 #include "functions.hpp"
 
+int check_input_data(const int N, const int comm_size);
+
 int check_matrix_singularity(const Matrix& A,
                              const int N,
                              int rank,

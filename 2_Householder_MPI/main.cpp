@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 
     int N = std::stoi(argv[1]);
 
-    if (comm_size > N) {
+    if (check_input_data(N, comm_size)) {
       if (rank == 0)
         std::cout
             << "[ERROR] Processes can't be more than the size of matrix!\n";

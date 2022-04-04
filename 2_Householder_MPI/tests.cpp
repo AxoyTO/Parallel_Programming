@@ -1,5 +1,17 @@
 #include "tests.hpp"
 
+int check_input_data(const int N, const int comm_size) {
+  int error_flag = 0;
+  if (comm_size > N) {
+    error_flag = 1;
+  }
+
+  int tmp;
+  MPI_Allreduce(&error_flag, &tmp, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+
+  return tmp;
+}
+
 int check_matrix_singularity(const Matrix& A,
                              const int N,
                              int rank,
