@@ -1,7 +1,7 @@
 #pragma once
 #include "functions.hpp"
 
-int check_matrix_singularity(const Matrix& columns,
+int check_matrix_singularity(const Matrix& A,
                              const int N,
                              int rank,
                              int comm_size);

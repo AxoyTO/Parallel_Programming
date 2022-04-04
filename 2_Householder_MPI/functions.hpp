@@ -63,7 +63,7 @@ double norm_of_residual_vector(Matrix& init_A,
 
 void allocate_matrix(Matrix& A, const int N, int rank, int comm_size);
 
-void free_matrix(Matrix& columns);
+void free_matrix(Matrix& A);
 
 void print_results(const int comm_size,
                    const int N,
