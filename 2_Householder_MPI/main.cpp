@@ -4,8 +4,8 @@
 #include "tests.hpp"
 
 #define watch(x) std::cout << (#x) << " is " << (x) << "\n"
-#define TEST 1
-#define DEBUG 1
+#define TEST 0
+#define DEBUG 0
 #define RESULT_OUTPUT 1
 
 using std::vector;
@@ -17,16 +17,30 @@ int main(int argc, char** argv) {
                  "For example: ./Householder.exe 1024\n";
   } else {
     int rank, comm_size;
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
     int N = std::stoi(argv[1]);
 
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+    double T, B, T1, T2, temp_reduction_time, temp_B;
+
+    // T = Total time of serial execution
+    // B = Total time of non - parallizable part
+    // T-B = Total time of parallizable part(when executed serially)
+    // T = B + (T-B)
+
+    if (comm_size == 1) {
+      B = 0;
+      T = MPI_Wtime();
+      temp_B = MPI_Wtime();
+    }
+
     if (check_input_data(N, comm_size)) {
       if (rank == 0)
-        std::cout
-            << "[ERROR] Processes can't be more than the size of matrix!\n";
+        std::cout << "[ERROR] Processes "
+                     "can't be more than the "
+                     "size of matrix!\n";
       MPI_Finalize();
       return 0;
     }
@@ -34,15 +48,19 @@ int main(int argc, char** argv) {
     Matrix init_A, A;
     Vector init_b(N), b(N), x(N);
     std::vector<std::pair<int, double>> res;
-    double T1, T2, temp_reduction_time;
 
     generate_random_matrix(init_A, A, N, rank, comm_size);
     generate_random_vector(init_b, b, init_A, N);
 
+    if (comm_size == 1) {
+      B += MPI_Wtime() - temp_B;
+    }
+
 #if DEBUG
     print_matrix(init_A, N, rank, comm_size);
     print_vector(init_b, rank);
-    // print_matrix(A, N, rank, comm_size);
+    // print_matrix(A, N, rank,
+    // comm_size);
 #endif
 
     T1 = MPI_Wtime();
@@ -51,7 +69,8 @@ int main(int argc, char** argv) {
 #if TEST
     if (check_matrix_singularity(A, N, rank, comm_size)) {
       if (rank == 0)
-        std::cout << "[INFO] Infinite solutions exist!\n";
+        std::cout << "[INFO] Infinite "
+                     "solutions exist!\n";
 
       free_matrix(init_A);
       free_matrix(A);
@@ -73,8 +92,9 @@ int main(int argc, char** argv) {
     T2 = temp_reduction_time;
 
 #if DEBUG
-    // print_matrix(init_A, N, rank, comm_size);
-    // print_matrix(A, N, rank, comm_size);
+    // print_matrix(init_A, N, rank,
+    // comm_size);
+    print_matrix(A, N, rank, comm_size);
 #endif
 
     gather_results(res, N, rank, comm_size);
@@ -87,8 +107,25 @@ int main(int argc, char** argv) {
       print_results(comm_size, N, residual_norm, T1, T2);
     }
 #endif
+    if (comm_size == 1)
+      temp_B = MPI_Wtime();
+
     free_matrix(init_A);
     free_matrix(A);
+
+    if (comm_size == 1)
+      B += MPI_Wtime() - temp_B;
+
+    if (comm_size == 1) {
+      T = MPI_Wtime() - T;
+      if (rank == 0)
+        std::cout << "Total time of serial "
+                     "execution: "
+                  << T << " s.\n";
+      std::cout << "Total time of non-parallelizable part: " << B << " s.\n";
+      std::cout << "Serial / Parallel: " << B / T << "\n";
+    }
+
     MPI_Finalize();
     return 0;
   }
