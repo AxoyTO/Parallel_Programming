@@ -69,6 +69,6 @@ void free_matrix(Matrix& A);
 
 void print_results(const int comm_size,
                    const int N,
-                   const double t,
+                   const double norm_res,
                    const double T1,
                    const double T2);
