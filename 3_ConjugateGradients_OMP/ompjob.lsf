@@ -1,0 +1,14 @@
+source /polusfs/setenv/setup.SMPI
+#BSUB -q normal
+#BSUB -W 03:00
+#BSUB -R "affinity[core(4)]"
+#BSUB -o result.out
+#BSUB -e result.err
+
+OMP_NUM_THREADS=1 /polusfs/lsf/openmp/launchOpenMP.py ./main 100 30 1
+OMP_NUM_THREADS=2 /polusfs/lsf/openmp/launchOpenMP.py ./main 100 30 2
+OMP_NUM_THREADS=4 /polusfs/lsf/openmp/launchOpenMP.py ./main 100 30 4
+OMP_NUM_THREADS=8 /polusfs/lsf/openmp/launchOpenMP.py ./main 100 30 8
+OMP_NUM_THREADS=16 /polusfs/lsf/openmp/launchOpenMP.py ./main 100 30 16
+OMP_NUM_THREADS=32 /polusfs/lsf/openmp/launchOpenMP.py ./main 100 30 32
+OMP_NUM_THREADS=64 /polusfs/lsf/openmp/launchOpenMP.py ./main 100 30 64
