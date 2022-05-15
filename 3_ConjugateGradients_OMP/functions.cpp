@@ -1,5 +1,3 @@
-#pragma once
-
 #include "functions.hpp"
 #include <cassert>
 #include <cmath>
@@ -87,10 +85,7 @@ void generate_row_col_val(const Matrix& sparse_matrix,
     Vector col, val;
     for (int j = 0; j < sparse_matrix[i].size(); j++) {
       if (sparse_matrix[i][j] != 0) {
-        // row.push_back(i);
         col.push_back(j);
-        // col.push_back(j);
-        // val.push_back(sparse_matrix[i][j]);
         val.push_back(sparse_matrix[i][j]);
       }
     }
@@ -98,14 +93,19 @@ void generate_row_col_val(const Matrix& sparse_matrix,
   }
 }
 
-void generate_vector_b(Vector& b) {
+void generate_vector_b(const Matrix& matrix, Vector& b) {
   const int max_connections = (b.size() > 8) ? 7 : ((b.size() == 1) ? 1 : 4);
 
-  for (int i = 0; i < b.size(); i++) {
-    b[i] = rand() % 10;
+  for (int i = 0; i < matrix.size(); i++) {
+    double row_sum = 0;
+    //#pragma omp parallel for reduction(+ : row_sum)
+    for (const auto& i : matrix[i]) {
+      if (i != 0)
+        row_sum += i;
+    }
+    b[i] = row_sum;
+    // b[i] = rand() % 10;
   }
-
-  // return b;
 }
 
 void set_diagonal_matrix_M(const Matrix& A, Matrix& M) {
@@ -123,26 +123,91 @@ void set_diagonal_matrix_M(const Matrix& A, Matrix& M) {
 }
 
 void inverse_diagonal_matrix(Matrix& M) {
+  //#pragma omp parallel for
   for (int i = 0; i < M.size(); i++) {
-    for (int j = 0; j < M[i].size(); j++) {
-      M[i][j] = i == j ? 1 / M[i][j] : M[i][j];
-    }
+    assert(M.size() == M[i].size() && "Matrix is not in square form!");
+    M[i][i] = 1 / M[i][i];
   }
 }
 
-void precondition(std::vector<double>& z,
-                  const std::vector<double>& diag,
-                  const std::vector<double>& r) {
-  double point = 0.0;
-
-  for (uint32_t j = 0; j < r.size(); j++)
-    point += r[j] * diag[j];
-
-  // set_const(z, point);
+Vector precondition(const Matrix& M, const Vector& r) {
+  Vector z;
+  for (int i = 0; i < M.size(); i++) {
+    z.push_back(M[i][i] * r[i]);
+  }
+  return z;
 }
 
-Vector precondition(const Matrix& M, const Vector& r){
-  for(int i = 0; i<)
+double ddot(const Vector& v1, const Vector& v2) {
+  double sum = 0;
+  assert(v1.size() == v2.size() && "Vectors are not of same length!");
+
+#pragma omp parallel for reduction(+ : sum)
+  for (int i = 0; i < v1.size(); i++) {
+    sum += v1[i] * v2[i];
+  }
+
+  return sum;
+}
+
+Vector axpby(const double alpha,
+             const Vector& v1,
+             const double beta,
+             const Vector& v2) {
+  assert(v1.size() == v2.size() && "axpby vectors are not of same length!");
+
+  Vector v(v1.size(), 0);
+
+#pragma omp parallel for
+  for (int i = 0; i < v1.size(); i++)
+    v[i] = alpha * v1[i] + beta * v2[i];
+
+  return v;
+}
+
+Vector spmv(const Matrix& matrix, const Vector& vec) {
+  assert(matrix.size() == vec.size() &&
+         "spmv matrix and vector are incompatible!");
+
+  Vector res(matrix.size(), 0);
+
+#pragma omp parallel for
+  for (int i = 0; i < matrix.size(); i++) {
+    for (int j = 0; j < matrix[i].size(); j++) {
+      res[i] += matrix[i][j] * vec[j];
+    }
+  }
+
+  return res;
+}
+
+double get_norm(const Vector& vec) {
+  double norm = 0;
+
+  /*
+  POLUS error
+  #pragma omp parallel for reduction(+ : norm)
+    for (const auto& i : vec)
+      norm += i * i;
+  */
+
+#pragma omp parallel for reduction(+ : norm)
+  for (int i = 0; i < vec.size(); i++)
+    norm += vec[i] * vec[i];
+
+  // std::cout << sqrt(norm) << "\n";
+  return std::sqrt(norm);
+}
+
+// Ax-b
+Vector get_residual(const Matrix& A, const Vector& x, const Vector& b) {
+  Vector residual(x.size(), 0);
+  residual = spmv(A, x);
+
+  for (int i = 0; i < residual.size(); i++)
+    residual[i] -= b[i];
+
+  return residual;
 }
 
 void print_matrix(const Matrix& sparse_matrix) {
@@ -196,9 +261,13 @@ void print_row_col_val(const Row_Col_Val_UOMap& row_col_val) {
   for (int i = 0; i < row_col_val.size(); i++) {
     std::cout << std::setw(2) << i << "   ";
     for (int j = 0; j < row_col_val.at(i).first.size(); j++) {
+      /*
       std::cout << std::defaultfloat << row_col_val.at(i).first[j] << ":"
                 << std::fixed << std::setw(5) << row_col_val.at(i).second[j]
                 << std::setw(10);
+                */
+      std::cout << row_col_val.at(i).first[j] << ":" << std::fixed
+                << std::setw(5) << row_col_val.at(i).second[j] << std::setw(10);
     }
     std::cout << "\n";
   }
