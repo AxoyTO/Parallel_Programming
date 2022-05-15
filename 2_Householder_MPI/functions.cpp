@@ -59,7 +59,7 @@ void generate_random_vector(Vector& init_b,
   }
 }
 
-bool cmpA(Column a, Column b) {
+bool sort_compare(Column a, Column b) {
   return a.rank < b.rank;
 }
 
@@ -82,7 +82,7 @@ void print_matrix(Matrix A, const int N, int rank, int comm_size) {
       }
     }
 
-    std::sort(A.begin(), A.end(), cmpA);
+    std::sort(A.begin(), A.end(), sort_compare);
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < A.size(); j++)
         if (std::abs(A[j].col[i]) < 10e-7)
@@ -127,79 +127,91 @@ void householder_reflection(Matrix& A,
                             const int N,
                             int rank,
                             int comm_size) {
-  int p_num = 0;    // Process
-  int col_num = 0;  // A column
-
-  for (int i = 0; i < N - 1; ++i) {
+  int p_num = 0;                     // Process  O(1)
+  int col_num = 0;                   // A column   O(1)
+  for (int i = 0; i < N - 1; i++) {  // O(N-1)
+    // std::cout << "rank is " << rank << " -- upper p_num " << p_num << "\n";
     if (p_num == rank) {
-      double S = 0.0;
-      for (int j = i + 1; j < N; ++j)
+      // std::cout << "upper rank" << rank << "\n";
+      //   std::cout << "upper cycle p_num is " << p_num << "\n";
+      //    First rank 0
+      double S = 0.0;                  // For each rank const
+      for (int j = i + 1; j < N; j++)  // For each rank const*N
         S += A[col_num].col[j] * A[col_num].col[j];
 
-      double a = sqrt(S + A[col_num].col[i] * A[col_num].col[i]);
+      double a = sqrt(S + A[col_num].col[i] *
+                              A[col_num].col[i]);  // sqrt time complexity ?
+                                                   // Probably no more than O(n)
 
-      double* x;
-      x = (double*)malloc(N * sizeof(double));
-      memset(x, 0, N * sizeof(double));
+      double* x;                                // O(1)
+      x = (double*)malloc(N * sizeof(double));  // Non-deterministic
+      memset(x, 0, N * sizeof(double));         // For each rank O(n)
 
-      x[i] = A[col_num].col[i] - a;
-      for (int j = i + 1; j < N; ++j)
+      x[i] = A[col_num].col[i] - a;    // O(1)
+      for (int j = i + 1; j < N; j++)  // For each rank const*N
         x[j] = A[col_num].col[j];
 
-      double x_norm = sqrt(S + x[i] * x[i]);
+      double x_norm = sqrt(S + x[i] * x[i]);  // O(1)
 
       if (std::abs(x_norm) > 10e-7)
-        for (int j = 0; j < N; ++j)
+        for (int j = 0; j < N; j++)  // For each rank const*N
           x[j] /= x_norm;
 
-      MPI_Bcast(x, N, MPI_DOUBLE, p_num, MPI_COMM_WORLD);
+      // std::cout << "above bcast\n";
+      MPI_Bcast(
+          x, N, MPI_DOUBLE, p_num,
+          MPI_COMM_WORLD);  // MPI_Bcast ? O(N) ? send N times to P processors ?
 
       // matmult
-      for (int j = 0; j < A.size(); j++) {
+      // O(N^2)
+      for (int j = 0; j < A.size(); j++) {  // A.size = N ---> Finally O(N^2)
         double sum = 0;
-        for (int k = 0; k < N; ++k)
+        for (int k = 0; k < N; k++)  // O(N)
           sum += x[k] * A[j].col[k];
 
-        for (int k = 0; k < N; k++)
+        for (int k = 0; k < N; k++)  // O(N)
           A[j].col[k] -= 2 * x[k] * sum;
       }
 
       double sum = 0;
-      for (int j = 0; j < N; j++)
+      for (int j = 0; j < N; j++)  // O(N)
         sum += x[j] * b[j];
 
-      for (int j = 0; j < N; j++)
+      for (int j = 0; j < N; j++)  // O(N)
         b[j] -= 2 * sum * x[j];
 
       free(x);
       col_num++;
-    } else {
-      double* x;
-      x = (double*)malloc(N * sizeof(double));
-      memset(x, 0, N * sizeof(double));
+    } else {  // --> Finally O(2N^2)
+      // std::cout << "lower rank" << rank << "\n";
+      double* x;                                // O(1)
+      x = (double*)malloc(N * sizeof(double));  // Non-deterministic
+      memset(x, 0, N * sizeof(double));         // O(N)
 
-      MPI_Bcast(x, N, MPI_DOUBLE, p_num, MPI_COMM_WORLD);
+      // std::cout << "pnum is " << p_num << "\n";
+      MPI_Bcast(x, N, MPI_DOUBLE, p_num, MPI_COMM_WORLD);  // O ?
 
-      for (int j = 0; j < A.size(); j++) {
+      for (int j = 0; j < A.size(); j++) {  // A.size = N --> Finally O(2N^2)
         double sum = 0;
-        for (int k = 0; k < N; ++k)
+        for (int k = 0; k < N; k++)  // O(N)
           sum += x[k] * A[j].col[k];
 
-        for (int k = 0; k < N; k++)
+        for (int k = 0; k < N; k++)  // O(N)
           A[j].col[k] -= 2 * x[k] * sum;
       }
 
       double sum = 0;
-      for (int j = 0; j < N; j++)
+      for (int j = 0; j < N; j++)  // O(N)
         sum += x[j] * b[j];
 
-      for (int j = 0; j < N; j++)
+      for (int j = 0; j < N; j++)  // O(N)
         b[j] -= 2 * sum * x[j];
 
       free(x);
     }
 
-    p_num = (p_num + 1) % comm_size;
+    p_num = (p_num + 1) % comm_size;  // O(1)
+    // std::cout << "below p_num " << p_num << "\n";
   }
 }
 
@@ -211,13 +223,20 @@ void reverse_gaussian(Matrix& A,
                       int comm_size) {
   int step = N - 1;  // Step
   int col_num = A.size() - 1;
+  // std::cout << A.size() << "\n";
   int p_receiver = step % comm_size;
 
-  while (step >= 0) {
-    if ((col_num >= 0) && (A[col_num].rank == step)) {
+  while (step >= 0) {                                   // N
+    if ((col_num >= 0) && (A[col_num].rank == step)) {  // N
+      // std::cout << "rank " << rank << " is inside if -- step:" << step <<
+      // "\n";
       double x = b[step];
-      for (int k = 0; k < res.size(); k++)
+
+      for (int k = 0; k < res.size(); k++) {  // ??
+        // std::cout << "rank:" << rank << " step:" << step
+        //           << " res.size:" << res.size() << "\n";
         x -= res[k].second * A[res[k].first / comm_size].col[step];
+      }
 
       double x_temp;
       MPI_Reduce(&x, &x_temp, 1, MPI_DOUBLE, MPI_SUM, p_receiver,
@@ -227,8 +246,11 @@ void reverse_gaussian(Matrix& A,
       x /= A[col_num].col[step];
 
       res.push_back(std::pair<int, double>(step, x));
+
       col_num--;
     } else if (res.size()) {
+      // std::cout << "rank " << rank << " is inside elseif -- step" << step
+      //           << "\n";
       double x_send = 0;
       for (int k = 0; k < res.size(); k++)
         x_send += res[k].second * A[res[k].first / comm_size].col[step];
@@ -238,6 +260,8 @@ void reverse_gaussian(Matrix& A,
       MPI_Reduce(&x_send, &x_temp_send, 1, MPI_DOUBLE, MPI_SUM, p_receiver,
                  MPI_COMM_WORLD);
     } else {
+      // std::cout << "rank " << rank << " is inside else -- step" << step <<
+      // "\n";
       double null = 0.0;
       double tmpNull = 0.0;
       MPI_Reduce(&null, &tmpNull, 1, MPI_DOUBLE, MPI_SUM, p_receiver,
@@ -247,6 +271,12 @@ void reverse_gaussian(Matrix& A,
     step--;
     p_receiver = step % comm_size;
   }
+
+  // std::cout << "rank: " << rank << " ";
+  // std::cout << "rank -> " << rank << " res.size -> " << res.size() << "\n";
+  // for (const auto& v : res) {
+  //   std::cout << "first: " << v.first << " --- second: " << v.second << "\n";
+  // }
 }
 
 void gather_results(std::vector<std::pair<int, double>>& res,
@@ -254,11 +284,12 @@ void gather_results(std::vector<std::pair<int, double>>& res,
                     int rank,
                     int comm_size) {
   if (rank == 0) {
-    for (int i = 1; i < comm_size; ++i) {
+    for (int i = 1; i < comm_size; i++) {
       int x_row;
+      // std::cout << "rank: " << rank << " x_row:" << x_row << "\n";
       MPI_Recv(&x_row, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
                MPI_STATUS_IGNORE);
-      for (int j = 0; j < x_row; ++j) {
+      for (int j = 0; j < x_row; j++) {
         int x_num;
         double x;
         MPI_Recv(&x_num, 1, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD,
@@ -271,9 +302,14 @@ void gather_results(std::vector<std::pair<int, double>>& res,
   } else {
     int size = res.size();
     MPI_Send(&size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    // std::cout << "rank:" << rank << " sends size:" << size << " to rank 0\n";
     for (int i = 0; i < res.size(); i++) {
       MPI_Send(&(res[i].first), 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
       MPI_Send(&(res[i].second), 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+      // std::cout << "rank:" << rank << " sends x_num:" << res[i].first
+      //           << " to rank 0\n"
+      //         << "rank:" << rank << " sends x:" << res[i].second
+      //         << " to rank 0\n";
     }
   }
 }
@@ -285,8 +321,10 @@ double norm_of_residual_vector(Matrix& init_A,
                                int rank,
                                int comm_size) {
   std::map<int, double> result_map;
-  for (int i = 0; i < res.size(); ++i)
+  for (int i = 0; i < res.size(); i++) {
+    // std::cout << "res[" << i << "].first is " << res[i].first << "\n";
     result_map[res[i].first] = res[i].second;
+  }
 
   if (rank == 0) {
     double* tmp = (double*)malloc(N * sizeof(double));
@@ -347,6 +385,7 @@ void print_results(const int comm_size,
   // std::cout << "MPI Processes: " << comm_size << "\n";
   // std::cout << "Matrix size: " << N << "\n";
   std::cout << "Norm of residual vector: " << residual_norm << "\n";
+
   std::cout << "Householder Reflection elapsed time(T1): " << T1 << " s.\n";
   std::cout << "Reverse Gaussian elapsed time(T2): " << T2 << " s.\n";
   std::cout << "Total time elapsed(T1+T2): " << T1 + T2 << " s.\n";
