@@ -11,7 +11,10 @@ using Vector = vector<double>;
 using Matrix = vector<Vector>;
 using Row_Col_Val_UOMap = unordered_map<int, std::pair<Vector, Vector>>;
 
-void generate_cube_and_sparse_matrix(const int N_side, Matrix& sparse_matrix);
+void generate_cube_and_sparse_matrix(const int Nx,
+                                     const int Ny,
+                                     const int Nz,
+                                     Matrix& sparse_matrix);
 
 void generate_row_col_val(const Matrix& sparse_matrix,
                           Row_Col_Val_UOMap& row_col_val);
@@ -24,14 +27,19 @@ void print_vector(const Vector& vec);
 
 void print_row_col_val(const Row_Col_Val_UOMap& row_col_val);
 
-void set_diagonal_matrix_M(const Matrix& A, Matrix& M);
+void set_preconditioner_diagonal(const Matrix& A, Vector& M);
 
-void inverse_diagonal_matrix(Matrix& M);
+// void set_diagonal_matrix_M(const Matrix& A, Matrix& M);
+
+void inverse_preconditioner_diagonal(Vector& M);
+
+// void inverse_diagonal_matrix(Matrix& M);
 
 Vector get_residual(const Matrix& A, const Vector& x, const Vector& b);
 
 // Preconditioning
-Vector precondition(const Matrix& M, const Vector& r);
+// Vector precondition(const Matrix& M, const Vector& r);
+Vector precondition(const Vector& M, const Vector& r);
 
 // Dot product
 double ddot(const Vector& v1, const Vector& v2);

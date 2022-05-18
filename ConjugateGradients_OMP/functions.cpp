@@ -8,7 +8,10 @@ constexpr double pi = 3.14159265358979323846;
 
 namespace CGSolver {
 
-void generate_cube_and_sparse_matrix(const int N_side, Matrix& sparse_matrix) {
+void generate_cube_and_sparse_matrix(const int Nx,
+                                     const int Ny,
+                                     const int Nz,
+                                     Matrix& sparse_matrix) {
   auto non_diag = [](int i, int j) -> double { return cos(i * j + pi); };
   // N_side = Nx = Ny = Nz
   // i-Nx*Ny if K > 0
@@ -19,23 +22,23 @@ void generate_cube_and_sparse_matrix(const int N_side, Matrix& sparse_matrix) {
   // i+Nx if I < Ny-1
   // i+Nx*Ny if K < Nz-1
 
-  for (int K = 0; K < N_side; K++) {
-    for (int J = 0; J < N_side; J++) {
-      for (int I = 0; I < N_side; I++) {
-        Vector row(N_side * N_side * N_side, 0);
-        int i = K * N_side * N_side + J * N_side + I;
+  for (int K = 0; K < Nz; K++) {
+    for (int J = 0; J < Ny; J++) {
+      for (int I = 0; I < Nx; I++) {
+        Vector row(Nx * Ny * Nz, 0);
+        int i = K * Nx * Ny + J * Nx + I;
         int j = {};
         double non_diag_value = 0, sum = 0;
         // i-Nx*Ny if K > 0
         if (K > 0) {
-          j = i - N_side * N_side;
+          j = i - Nx * Ny;
           non_diag_value = non_diag(i, j);
           row[j] = non_diag(i, j);
           sum += non_diag_value;
         }
         // i-Nx if J > 0
         if (J > 0) {
-          j = i - N_side;
+          j = i - Nx;
           non_diag_value = non_diag(i, j);
           row[j] = non_diag(i, j);
           sum += non_diag_value;
@@ -48,22 +51,22 @@ void generate_cube_and_sparse_matrix(const int N_side, Matrix& sparse_matrix) {
           sum += non_diag_value;
         }
         // i+1 if I < Nx-1
-        if (I < N_side - 1) {
+        if (I < Nx - 1) {
           j = i + 1;
           non_diag_value = non_diag(i, j);
           row[j] = non_diag(i, j);
           sum += non_diag_value;
         }
         // i+Nx if I < Ny-1
-        if (J < N_side - 1) {
-          j = i + N_side;
+        if (J < Ny - 1) {
+          j = i + Nx;
           non_diag_value = non_diag(i, j);
           row[j] = non_diag(i, j);
           sum += non_diag_value;
         }
         // i+Nx*Ny if K < Nz-1
-        if (K < N_side - 1) {
-          j = i + N_side * N_side;
+        if (K < Nz - 1) {
+          j = i + Nx * Ny;
           non_diag_value = non_diag(i, j);
           row[j] = non_diag(i, j);
           sum += non_diag_value;
@@ -71,7 +74,7 @@ void generate_cube_and_sparse_matrix(const int N_side, Matrix& sparse_matrix) {
         // i always
         if (true) {
           j = i;
-          row[j] = N_side != 1 ? (sum * 1.5) : 1;
+          row[j] = (Nx != 1 || Ny != 1 || Nz != 1) ? (sum * 1.5) : 1;
         }
         sparse_matrix.push_back(row);
       }
@@ -108,6 +111,23 @@ void generate_vector_b(const Matrix& matrix, Vector& b) {
   }
 }
 
+void set_preconditioner_diagonal(const Matrix& A, Vector& M) {
+  for (int i = 0; i < A.size(); i++) {
+    M[i] = A[i][i];
+  }
+
+  assert(A.size() == M.size() &&
+         "Sizes of the sparse matrix and preconditioner M are incompatible!");
+}
+
+void inverse_preconditioner_diagonal(Vector& M) {
+  //#pragma omp parallel for
+  for (int i = 0; i < M.size(); i++) {
+    M[i] = 1 / M[i];
+  }
+}
+
+/*
 void set_diagonal_matrix_M(const Matrix& A, Matrix& M) {
   for (int i = 0; i < A.size(); i++) {
     M.push_back(Vector(A[i].size(), 0));
@@ -134,6 +154,15 @@ Vector precondition(const Matrix& M, const Vector& r) {
   Vector z;
   for (int i = 0; i < M.size(); i++) {
     z.push_back(M[i][i] * r[i]);
+  }
+  return z;
+}
+
+*/
+Vector precondition(const Vector& M, const Vector& r) {
+  Vector z;
+  for (int i = 0; i < M.size(); i++) {
+    z.push_back(M[i] * r[i]);
   }
   return z;
 }
