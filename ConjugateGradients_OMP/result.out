@@ -1,0 +1,354 @@
+Resource usage summary:
+
+    CPU time :                                   103.02 sec.
+    Max Memory :                                 794 MB
+    Average Memory :                             633.80 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                73
+    Run time :                                   19 sec.
+    Turnaround time :                            17 sec.
+
+The output (if any) follows:
+
+Program running on 1 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.108312 s.
+Total time of all iterations: 4.93294 s.
+Average time of an iteration: 0.164431 s.
+Average SpMV time: 0.164265 s.
+Average axpby time: 3.54072e-05 s.
+Average ddot time: 3.60657e-05 s.
+Norm of residual: 1.87976e-12
+
+Program running on 2 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.107604 s.
+Total time of all iterations: 2.46981 s.
+Average time of an iteration: 0.082327 s.
+Average SpMV time: 0.082159 s.
+Average axpby time: 3.98415e-05 s.
+Average ddot time: 4.03878e-05 s.
+Norm of residual: 1.06724e-12
+
+Program running on 4 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.107669 s.
+Total time of all iterations: 1.24228 s.
+Average time of an iteration: 0.0414093 s.
+Average SpMV time: 0.0412402 s.
+Average axpby time: 4.6935e-05 s.
+Average ddot time: 3.77765e-05 s.
+Norm of residual: 1.21397e-12
+
+Program running on 8 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.108149 s.
+Total time of all iterations: 0.629246 s.
+Average time of an iteration: 0.0209749 s.
+Average SpMV time: 0.0207984 s.
+Average axpby time: 5.07383e-05 s.
+Average ddot time: 4.07138e-05 s.
+Norm of residual: 4.56197e-12
+
+Program running on 16 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.11003 s.
+Total time of all iterations: 0.359925 s.
+Average time of an iteration: 0.0119975 s.
+Average SpMV time: 0.0117953 s.
+Average axpby time: 5.49282e-05 s.
+Average ddot time: 5.87628e-05 s.
+Norm of residual: 2.27282e-12
+
+Program running on 32 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.110638 s.
+Total time of all iterations: 0.351662 s.
+Average time of an iteration: 0.0117221 s.
+Average SpMV time: 0.0114462 s.
+Average axpby time: 6.83791e-05 s.
+Average ddot time: 7.56045e-05 s.
+Norm of residual: 4.38032e-12
+
+Program running on 64 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.111515 s.
+Total time of all iterations: 0.346258 s.
+Average time of an iteration: 0.0115419 s.
+Average SpMV time: 0.0110666 s.
+Average axpby time: 8.77803e-05 s.
+Average ddot time: 0.000159671 s.
+Norm of residual: 2.16107e-12
+
+Program running on 128 OMP thread(s).
+Nx:100   Ny:10   Nz:10
+Sparse Matrix Size: 10000 x 10000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 0.111611 s.
+Total time of all iterations: 0.487247 s.
+Average time of an iteration: 0.0162416 s.
+Average SpMV time: 0.0135381 s.
+Average axpby time: 0.000234509 s.
+Average ddot time: 0.0019675 s.
+Norm of residual: 2.66058e-12
+
+
+
+PS:
+
+Read file <result.err> for stderr output of this job.
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   9061.33 sec.
+    Max Memory :                                 76362 MB
+    Average Memory :                             73631.31 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   -
+    Max Processes :                              5
+    Max Threads :                                137
+    Run time :                                   1409 sec.
+    Turnaround time :                            1404 sec.
+
+The output (if any) follows:
+
+Program running on 1 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.2676 s.
+Total time of all iterations: 500.012 s.
+Average time of an iteration: 16.6671 s.
+Average SpMV time: 16.6656 s.
+Average axpby time: 0.000328321 s.
+Average ddot time: 0.000307394 s.
+Norm of residual: 4.97385e-12
+
+Program running on 2 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.1584 s.
+Total time of all iterations: 250.178 s.
+Average time of an iteration: 8.33926 s.
+Average SpMV time: 8.3379 s.
+Average axpby time: 0.000344709 s.
+Average ddot time: 0.000217861 s.
+Norm of residual: 4.99678e-12
+
+Program running on 4 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.184 s.
+Total time of all iterations: 126.464 s.
+Average time of an iteration: 4.21546 s.
+Average SpMV time: 4.21422 s.
+Average axpby time: 0.000375441 s.
+Average ddot time: 0.000104616 s.
+Norm of residual: 5.20159e-12
+
+Program running on 8 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.16 s.
+Total time of all iterations: 64.7201 s.
+Average time of an iteration: 2.15734 s.
+Average SpMV time: 2.15604 s.
+Average axpby time: 0.000429235 s.
+Average ddot time: 9.45367e-05 s.
+Norm of residual: 1.03829e-11
+
+Program running on 16 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.1816 s.
+Total time of all iterations: 36.5257 s.
+Average time of an iteration: 1.21752 s.
+Average SpMV time: 1.2162 s.
+Average axpby time: 0.000428922 s.
+Average ddot time: 9.09525e-05 s.
+Norm of residual: 1.01351e-11
+
+Program running on 32 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.2595 s.
+Total time of all iterations: 34.7011 s.
+Average time of an iteration: 1.1567 s.
+Average SpMV time: 1.15484 s.
+Average axpby time: 0.000507641 s.
+Average ddot time: 0.000142463 s.
+Norm of residual: 1.36906e-11
+
+Program running on 64 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.1596 s.
+Total time of all iterations: 34.2308 s.
+Average time of an iteration: 1.14103 s.
+Average SpMV time: 1.13818 s.
+Average axpby time: 0.000685108 s.
+Average ddot time: 0.000222489 s.
+Norm of residual: 7.73052e-12
+
+Program running on 128 OMP thread(s).
+Nx:100   Ny:100   Nz:10
+Sparse Matrix Size: 100000 x 100000
+Iterations: 30 / Max Iterations: 30
+Cube and Sparse Matrix generation time: 10.1181 s.
+Total time of all iterations: 35.2506 s.
+Average time of an iteration: 1.17502 s.
+Average SpMV time: 1.16351 s.
+Average axpby time: 0.000975411 s.
+Average ddot time: 0.00679659 s.
+Norm of residual: 6.21396e-12
+
+
+
+PS:
+
+Read file <result.err> for stderr output of this job.
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   1915.43 sec.
+    Max Memory :                                 119279 MB
+    Average Memory :                             106633.72 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   2 MB
+    Max Processes :                              5
+    Max Threads :                                137
+    Run time :                                   673 sec.
+    Turnaround time :                            672 sec.
+
+The output (if any) follows:
+
+Program running on 1 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.7943 s.
+Total time of all iterations: 78.9291 s.
+Average time of an iteration: 26.3097 s.
+Average SpMV time: 26.3078 s.
+Average axpby time: 0.000389575 s.
+Average ddot time: 0.000390073 s.
+Norm of residual: 2.58326e-11
+
+Program running on 2 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.8086 s.
+Total time of all iterations: 39.3178 s.
+Average time of an iteration: 13.1059 s.
+Average SpMV time: 13.1043 s.
+Average axpby time: 0.000419837 s.
+Average ddot time: 0.000245764 s.
+Norm of residual: 8.40431e-12
+
+Program running on 4 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.7537 s.
+Total time of all iterations: 19.9719 s.
+Average time of an iteration: 6.65729 s.
+Average SpMV time: 6.65558 s.
+Average axpby time: 0.00049791 s.
+Average ddot time: 0.00020959 s.
+Norm of residual: 1.37962e-11
+
+Program running on 8 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.7776 s.
+Total time of all iterations: 10.1432 s.
+Average time of an iteration: 3.38106 s.
+Average SpMV time: 3.37932 s.
+Average axpby time: 0.000527475 s.
+Average ddot time: 0.000215643 s.
+Norm of residual: 8.74086e-12
+
+Program running on 16 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.71 s.
+Total time of all iterations: 5.83299 s.
+Average time of an iteration: 1.94433 s.
+Average SpMV time: 1.94256 s.
+Average axpby time: 0.000454231 s.
+Average ddot time: 0.000305066 s.
+Norm of residual: 8.84033e-12
+
+Program running on 32 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.7895 s.
+Total time of all iterations: 5.60419 s.
+Average time of an iteration: 1.86806 s.
+Average SpMV time: 1.86556 s.
+Average axpby time: 0.000519353 s.
+Average ddot time: 0.000598678 s.
+Norm of residual: 8.21883e-12
+
+Program running on 64 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.7966 s.
+Total time of all iterations: 5.41011 s.
+Average time of an iteration: 1.80337 s.
+Average SpMV time: 1.79887 s.
+Average axpby time: 0.000841004 s.
+Average ddot time: 0.00157675 s.
+Norm of residual: 8.64968e-12
+
+Program running on 128 OMP thread(s).
+Nx:50   Ny:50   Nz:50
+Sparse Matrix Size: 125000 x 125000
+Iterations: 3 / Max Iterations: 3
+Cube and Sparse Matrix generation time: 15.8182 s.
+Total time of all iterations: 5.71775 s.
+Average time of an iteration: 1.90592 s.
+Average SpMV time: 1.87358 s.
+Average axpby time: 0.00144077 s.
+Average ddot time: 0.0272187 s.
+Norm of residual: 8.21883e-12
+
+
+
+PS:
+
+Read file <result.err> for stderr output of this job.
