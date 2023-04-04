@@ -375,3 +375,10 @@ WSL2*
 *.zip
 *.mp4
 */.vscode
+*.vs*
+*.json
+*.doc*
+Prak_8i_774_Sem.pdf
+*.err
+*.out
+Task1/Task1

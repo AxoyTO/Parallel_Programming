@@ -1,0 +1,65 @@
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1 -q normal
+#BSUB -W 03:00
+#BSUB -o result.out
+#BSUB -e result.err
+echo "========= MATRIX: 128 x 128 ========="
+echo "============ THREADS: 1 ============"
+OMP_NUM_THREADS=1 mpiexec ./main 128 128 1
+echo "============ THREADS: 2 ============"
+OMP_NUM_THREADS=2 mpiexec ./main 128 128 2
+echo "============ THREADS: 4 ============"
+OMP_NUM_THREADS=4 mpiexec ./main 128 128 4
+echo "============ THREADS: 8 ============"
+OMP_NUM_THREADS=8 mpiexec ./main 128 128 8
+echo "============ THREADS: 16 ============"
+OMP_NUM_THREADS=16 mpiexec ./main 128 128 16
+echo "============ THREADS: 32 ============"
+OMP_NUM_THREADS=32 mpiexec ./main 128 128 32
+echo "============ THREADS: 64 ============"
+OMP_NUM_THREADS=64 mpiexec ./main 128 128 64
+echo "========= MATRIX: 256 x 256 ========="
+echo "============ THREADS: 1 ============"
+OMP_NUM_THREADS=1 mpiexec ./main 256 256 1
+echo "============ THREADS: 2 ============"
+OMP_NUM_THREADS=2 mpiexec ./main 256 256 2
+echo "============ THREADS: 4 ============"
+OMP_NUM_THREADS=4 mpiexec ./main 256 256 4
+echo "============ THREADS: 8 ============"
+OMP_NUM_THREADS=8 mpiexec ./main 256 256 8
+echo "============ THREADS: 16 ============"
+OMP_NUM_THREADS=16 mpiexec ./main 256 256 16
+echo "============ THREADS: 32 ============"
+OMP_NUM_THREADS=32 mpiexec ./main 256 256 32
+echo "============ THREADS: 64 ============"
+OMP_NUM_THREADS=64 mpiexec ./main 256 256 64
+echo "========= MATRIX: 512 x 512 ========="
+echo "============ THREADS: 1 ============"
+OMP_NUM_THREADS=1 mpiexec ./main 512 512 1
+echo "============ THREADS: 2 ============"
+OMP_NUM_THREADS=2 mpiexec ./main 512 512 2
+echo "============ THREADS: 4 ============"
+OMP_NUM_THREADS=4 mpiexec ./main 512 512 4
+echo "============ THREADS: 8 ============"
+OMP_NUM_THREADS=8 mpiexec ./main 512 512 8
+echo "============ THREADS: 16 ============"
+OMP_NUM_THREADS=16 mpiexec ./main 512 512 16
+echo "============ THREADS: 32 ============"
+OMP_NUM_THREADS=32 mpiexec ./main 512 512 32
+echo "============ THREADS: 64 ============"
+OMP_NUM_THREADS=64 mpiexec ./main 512 512 64
+echo "========= MATRIX: 1024 x 1024 ========="
+echo "============ THREADS: 1 ============"
+OMP_NUM_THREADS=1 mpiexec ./main 1024 1024 1
+echo "============ THREADS: 2 ============"
+OMP_NUM_THREADS=2 mpiexec ./main 1024 1024 2
+echo "============ THREADS: 4 ============"
+OMP_NUM_THREADS=4 mpiexec ./main 1024 1024 4
+echo "============ THREADS: 8 ============"
+OMP_NUM_THREADS=8 mpiexec ./main 1024 1024 8
+echo "============ THREADS: 16 ============"
+OMP_NUM_THREADS=16 mpiexec ./main 1024 1024 16
+echo "============ THREADS: 32 ============"
+OMP_NUM_THREADS=32 mpiexec ./main 1024 1024 32
+echo "============ THREADS: 64 ============"
+OMP_NUM_THREADS=64 mpiexec ./main 1024 1024 64
