@@ -1,0 +1,12 @@
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 1 -q normal
+#BSUB -W 03:00
+#BSUB -o 3_optimized.out
+#BSUB -e 3_optimized.err
+
+OMP_NUM_THREADS=1 mpiexec ./3/3_optimized.o
+OMP_NUM_THREADS=2 mpiexec ./3/3_optimized.o
+OMP_NUM_THREADS=4 mpiexec ./3/3_optimized.o
+OMP_NUM_THREADS=8 mpiexec ./3/3_optimized.o
+OMP_NUM_THREADS=16 mpiexec ./3/3_optimized.o
+OMP_NUM_THREADS=32 mpiexec ./3/3_optimized.o
