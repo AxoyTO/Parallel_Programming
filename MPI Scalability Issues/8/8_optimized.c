@@ -15,7 +15,7 @@ void print_matrix(int matrix_size) {
 
 int main(int argc, char** argv) {
   int size, rank, i, j, local_sum = 0, global_sum = 0;
-  int matrix_size = 1000000;
+  int matrix_size = 100000;
   double start_time, end_time;
 
   MPI_Init(&argc, &argv);
@@ -24,34 +24,17 @@ int main(int argc, char** argv) {
 
   // Засекаем время начала выполнения
   if (rank == 0) {
+    printf("============ PROCESSES: %d ============\n", size);
     // print_matrix(matrix_size);
     start_time = MPI_Wtime();
   }
 
-  int block_size = matrix_size / size;
-
-  int block_start, block_end;
-  for (int block = 0; block < matrix_size; block += block_size * size) {
-    block_start = rank * block_size + block;
-    block_end = block_start + block_size;
-
-    if (block_end > matrix_size) {
-      block_end = matrix_size;
+  // Вычисление суммы элементов треугольной матрицы
+  for (i = rank; i < matrix_size; i += size) {
+    for (j = 0; j <= i; j++) {
+      local_sum += 1;
     }
-
-    if (block_start >= matrix_size) {
-      break;
-    }
-
-    // Вычисление суммы элементов треугольных матриц
-    for (i = block_start; i < block_end; i++) {
-      for (j = 0; j <= i; j++) {
-        local_sum += 1;  // Пример вычисления элемента матрицы
-      }
-    }
-
-    // printf("Rank %d processed blocks[%d,%d], local sum: %d\n", rank,
-    //        block_start, block_end, local_sum);
+    // printf("Rank %d processed row %d, local sum: %d\n", rank, i, local_sum);
   }
 
   // Сбор локальных сумм и получение глобальной суммы

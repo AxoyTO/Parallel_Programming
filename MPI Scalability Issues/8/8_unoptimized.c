@@ -24,16 +24,34 @@ int main(int argc, char** argv) {
 
   // Засекаем время начала выполнения
   if (rank == 0) {
+    printf("============ PROCESSES: %d ============\n", size);
     // print_matrix(matrix_size);
     start_time = MPI_Wtime();
   }
 
-  // Вычисление суммы элементов треугольной матрицы
-  for (i = rank; i < matrix_size; i += size) {
-    for (j = 0; j <= i; j++) {
-      local_sum += 1;
+  int block_size = matrix_size / size;
+  int block_start, block_end;
+
+  for (int block = 0; block < matrix_size; block += block_size * size) {
+    block_start = rank * block_size + block;
+    block_end = block_start + block_size;
+
+    if (block_end > matrix_size) {
+      block_end = matrix_size;
     }
-    // printf("Rank %d processed row %d, local sum: %d\n", rank, i, local_sum);
+    if (block_start >= matrix_size) {
+      break;
+    }
+
+    // Вычисление суммы элементов треугольных матриц
+    for (i = block_start; i < block_end; i++) {
+      for (j = 0; j <= i; j++) {
+        local_sum += 1;
+      }
+    }
+
+    // printf("Rank %d processed blocks[%d,%d], local sum: %d\n", rank,
+    //        block_start, block_end, local_sum);
   }
 
   // Сбор локальных сумм и получение глобальной суммы

@@ -28,11 +28,11 @@ def make_script(program_dir, codefile):
 
             i = 1
             while i < MAX_PROCESSES+1:
-                f.write(f'echo "============ PROCESSES: {i} ============""\n')
+                #f.write(f'echo "============ PROCESSES: {i} ============""\n')
                 mpi_str = f'mpiexec -n {i} ./{program_dir}/{codefile}.o\n'
                 i *= 2
                 f.write(mpi_str)
-                f.write("\n")
+                #f.write("\n")
 
 def run_script(codefile):
     program_dir = codefile.split("_")[0]

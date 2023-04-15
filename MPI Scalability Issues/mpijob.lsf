@@ -1,0 +1,12 @@
+source /polusfs/setenv/setup.SMPI
+#BSUB -n 32 -q extended
+#BSUB -W 12:00
+#BSUB -o 8_optimized.out
+#BSUB -e 8_optimized.err
+
+mpiexec -n 1 ./8/8_optimized.o
+mpiexec -n 2 ./8/8_optimized.o
+mpiexec -n 4 ./8/8_optimized.o
+mpiexec -n 8 ./8/8_optimized.o
+mpiexec -n 16 ./8/8_optimized.o
+mpiexec -n 32 ./8/8_optimized.o
